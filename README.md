@@ -40,7 +40,9 @@ Works in Chrome, Edge, Brave and other Chromium browsers.
 JavaScript, Chrome Extensions Manifest V3, Web Crypto API, Have I Been Pwned range API.
 
 ## Why I built it
-_(write a few sentences in your own words)_
+Most people I know use one or two passwords for everything, and almost nobody checks whether those passwords have already leaked. I wanted a tool that catches this at the exact moment it matters: when you are typing the password. The hardest part was making it private. A password checker that sends your password somewhere is itself a risk, so I used the k-anonymity range API and salted fingerprints, so the extension can warn you without ever knowing or storing your actual passwords.
+
+This is my second cybersecurity project after a [phishing email detector](https://github.com/geo777arm/phish-detector).
 
 ## Author
 [geo777arm](https://github.com/geo777arm). Also see my [phishing email detector](https://github.com/geo777arm/phish-detector).
