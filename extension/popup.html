@@ -22,6 +22,16 @@
     <div class="stat"><span class="num" id="reused">0</span><span class="label" data-i18n="reused"></span></div>
   </section>
 
+  <section class="card checker">
+    <span class="card-title" data-i18n="checkTitle"></span>
+    <form id="check-form" class="output-row">
+      <input type="password" id="check-input" autocomplete="off" spellcheck="false">
+      <button type="button" id="check-show" class="ghost icon" aria-label="Show password"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg></button>
+      <button type="submit" id="check-btn" class="ghost" data-i18n="checkBtn"></button>
+    </form>
+    <div id="check-result" class="check-result" hidden></div>
+  </section>
+
   <section class="card generator">
     <div class="section-head">
       <span class="card-title" data-i18n="generator"></span>
@@ -41,12 +51,22 @@
     <p id="generator-hint" class="gen-hint"></p>
   </section>
 
+  <details class="why">
+    <summary><span data-i18n="whyTitle"></span></summary>
+    <ul>
+      <li data-i18n="why1"></li>
+      <li data-i18n="why2"></li>
+      <li data-i18n="why3"></li>
+    </ul>
+    <a href="https://github.com/geo777arm/password-guard" target="_blank" rel="noopener" data-i18n="whyCode"></a>
+  </details>
+
   <footer>
-    <p class="privacy" data-i18n="privacy"></p>
     <button id="reset" class="link" data-i18n="reset"></button>
   </footer>
 
   <script src="i18n.js"></script>
+  <script src="strength.js"></script>
   <script src="words.js"></script>
   <script src="generator.js"></script>
   <script src="popup.js"></script>

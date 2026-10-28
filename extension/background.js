@@ -51,6 +51,13 @@ async function bumpStats(leaked, reused) {
 }
 
 chrome.runtime.onMessage.addListener((msg, _sender, sendResponse) => {
+  // Ручная проверка из окошка: только база утечек, без отпечатков и статистики.
+  if (msg.type === "leaks") {
+    countLeaks(msg.sha1)
+      .then(leaks => sendResponse({ ok: true, leaks }))
+      .catch(e => sendResponse({ ok: false, error: String(e) }));
+    return true;
+  }
   if (msg.type !== "check") return;
   (async () => {
     try {

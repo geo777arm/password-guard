@@ -39,7 +39,7 @@ button { font: inherit; cursor: pointer; }
 .primary:hover { filter: brightness(1.1); }
 .hint { font-size: 12px; color: var(--bad); }
 
-footer { display: flex; align-items: center; gap: 12px; padding: 0 2px; }
+footer { display: flex; justify-content: flex-end; padding: 0 2px; }
 .privacy { font-size: 11px; color: var(--muted); flex: 1; }
 .link { border: 0; background: none; color: var(--muted); font-size: 12px; padding: 0; }
 .link:hover { color: var(--fg); }
@@ -58,3 +58,32 @@ header .title { flex: 1; }
 .gen-hint { font-size: 11px; color: var(--muted); line-height: 1.4; }
 textarea#generated { height: auto; min-height: 38px; padding: 9px 12px; line-height: 1.4; resize: none; field-sizing: content; overflow-wrap: anywhere; }
 .output-row { align-items: flex-start; }
+.checker { display: flex; flex-direction: column; gap: 10px; }
+#check-input {
+  flex: 1; min-width: 0; height: 38px; padding: 0 12px; border: 1px solid var(--line); border-radius: calc(var(--r) - 4px);
+  background: var(--field); color: var(--fg); font: 13px ui-monospace, "SF Mono", Menlo, monospace; outline: none;
+}
+#check-input::placeholder { color: var(--muted); font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Inter", sans-serif; }
+#check-input:focus, textarea#generated:focus { border-color: var(--accent); }
+.ghost.icon { padding: 0 10px; font-size: 13px; }
+.check-result { font-size: 12px; line-height: 1.5; padding: 10px 12px 10px 28px; border-radius: calc(var(--r) - 4px); background: var(--field); position: relative; }
+.check-result::before { content: ""; position: absolute; left: 12px; top: 15px; width: 7px; height: 7px; border-radius: 50%; background: var(--dot, var(--muted)); box-shadow: 0 0 8px var(--dot, var(--muted)); }
+.check-result[data-level="ok"] { --dot: var(--ok); }
+.check-result[data-level="warn"] { --dot: #ffc06b; }
+.check-result[data-level="bad"] { --dot: var(--bad); }
+.check-result[data-level="info"] { --dot: var(--accent); }
+.why { border: 1px solid var(--line); border-radius: var(--r); background: var(--card); padding: 0 14px; }
+.why summary { cursor: pointer; padding: 11px 0; font-weight: 600; font-size: 12px; color: var(--fg); list-style: none; display: flex; justify-content: space-between; }
+.why summary::-webkit-details-marker { display: none; }
+.why summary::after { content: "+"; color: var(--muted); font-weight: 400; }
+.why[open] summary::after { content: "−"; }
+.why ul { margin: 0 0 10px; padding-left: 16px; display: flex; flex-direction: column; gap: 6px; font-size: 12px; color: var(--muted); }
+.why a { display: inline-block; margin-bottom: 12px; font-size: 12px; color: var(--accent); text-decoration: none; }
+.why a:hover { text-decoration: underline; }
+/* компактнее, чтобы окошко помещалось без прокрутки */
+body { padding: 14px; gap: 10px; }
+header { padding: 0 2px 2px; }
+.stat { padding: 10px 12px; gap: 2px; }
+.stat .num { font-size: 22px; }
+.card { padding: 12px 14px; }
+.generator, .checker { gap: 10px; }

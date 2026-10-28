@@ -8,6 +8,7 @@ function renderTexts() {
   document.documentElement.lang = LANG;
   for (const el of document.querySelectorAll("[data-i18n]")) el.textContent = t(el.dataset.i18n);
   document.getElementById("generated").placeholder = t("placeholder");
+  document.getElementById("check-input").placeholder = t("checkPlaceholder");
   for (const btn of document.querySelectorAll("[data-lang]")) btn.classList.toggle("active", btn.dataset.lang === LANG);
   renderLength();
 }
@@ -78,6 +79,54 @@ document.getElementById("reset").addEventListener("click", async () => {
   await chrome.storage.local.set({ lang: LANG });
   renderStats();
 });
+
+// Ручная проверка пароля: хэш считается здесь, в базу уходят только первые 5 символов.
+async function sha1(text) {
+  const buf = await crypto.subtle.digest("SHA-1", new TextEncoder().encode(text));
+  return Array.from(new Uint8Array(buf), b => b.toString(16).padStart(2, "0")).join("").toUpperCase();
+}
+
+const checkInput = document.getElementById("check-input");
+const checkResult = document.getElementById("check-result");
+
+document.getElementById("check-show").addEventListener("click", () => {
+  checkInput.type = checkInput.type === "password" ? "text" : "password";
+});
+
+document.getElementById("check-form").addEventListener("submit", async event => {
+  event.preventDefault();
+  const pw = checkInput.value;
+  if (!pw) return;
+  checkResult.hidden = false;
+  checkResult.dataset.level = "info";
+  checkResult.textContent = t("checking");
+  const response = await chrome.runtime.sendMessage({ type: "leaks", sha1: await sha1(pw) })
+    .catch(() => null);
+  if (checkInput.value !== pw) return; // пароль успели поменять
+  const lines = [];
+  let level = "ok";
+  if (!response || !response.ok) {
+    level = "info";
+    lines.push(t("offline"));
+  } else if (response.leaks > 0) {
+    level = "bad";
+    lines.push(t("checkLeaked", response.leaks));
+  } else {
+    lines.push(t("checkClean"));
+  }
+  const tips = checkStrength(pw); // checkStrength живёт в strength.js
+  if (tips.length > 0) {
+    if (level === "ok") level = "warn";
+    lines.push(t("howTo") + "<br>• " + tips.join("<br>• "));
+  } else if (level !== "bad") {
+    lines.push(t("checkStrong"));
+  }
+  checkResult.dataset.level = level;
+  checkResult.innerHTML = lines.join("<br>");
+});
+
+// Если поменяли пароль после проверки, старый результат больше не про него.
+checkInput.addEventListener("input", () => { checkResult.hidden = true; });
 
 let savedMode = "random";
 try { savedMode = localStorage.getItem("pg-mode") || "random"; } catch {}

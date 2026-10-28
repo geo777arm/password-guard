@@ -8,6 +8,8 @@ A browser extension that warns you, while you type, if your password has appeare
 - **Breach check.** Looks the password up in [Have I Been Pwned](https://haveibeenpwned.com/Passwords) (900M+ leaked passwords) without ever sending it.
 - **Reuse warning.** Notices when the same password is used on several sites.
 - **Strength tips.** Explains what makes a password weak: length, missing character types, common passwords, keyboard runs, repeated characters, years.
+- **Manual check.** Type any password into the popup to see if it has leaked and how strong it is. Nothing is saved.
+- **"Why is this safe?"** A short explanation right in the popup, with a link to this source code.
 - **Generator.** Two modes: a random password (8–32 characters), or an easy-to-remember passphrase of 3–6 random words like `Kayak-Cookie-Galaxy-Broom-37!` (Russian words are written in Latin letters so every site accepts them). Uses `crypto.getRandomValues`.
 - **English and Russian.** Switch the language with the RU / EN toggle in the popup; warnings on websites follow it instantly.
 
@@ -23,6 +25,8 @@ For reuse detection, the extension stores a salted SHA-256 fingerprint per site 
 ![RU and EN interface](docs/popup-ru-en.png)
 
 ![Passphrase generator](docs/passphrase-ru-en.png)
+
+![Manual check and safety explainer](docs/checker-ru-en.png)
 
 ## Install
 Works in Chrome, Edge, Brave and other Chromium browsers.
