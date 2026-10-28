@@ -52,3 +52,9 @@ header .title { flex: 1; }
 .lang button { border: 0; background: none; color: var(--muted); font-size: 11px; font-weight: 600; padding: 4px 8px; border-radius: 7px; }
 .lang button.active { background: var(--btn); color: var(--btn-fg); }
 .lang button:not(.active):hover { color: var(--fg); }
+.segmented { display: flex; padding: 3px; gap: 2px; border-radius: 10px; background: var(--field); border: 1px solid var(--line); }
+.segmented button { border: 0; background: none; color: var(--muted); font-size: 11px; font-weight: 600; padding: 4px 9px; border-radius: 7px; }
+.segmented button.active { background: rgba(255,255,255,.1); color: var(--fg); }
+.gen-hint { font-size: 11px; color: var(--muted); line-height: 1.4; }
+textarea#generated { height: auto; min-height: 38px; padding: 9px 12px; line-height: 1.4; resize: none; field-sizing: content; overflow-wrap: anywhere; }
+.output-row { align-items: flex-start; }

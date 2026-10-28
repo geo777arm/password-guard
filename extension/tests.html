@@ -19,6 +19,7 @@
 <script src="i18n.js"></script>
 <script>LANG = "ru";</script>
 <script src="strength.js"></script>
+<script src="words.js"></script>
 <script src="generator.js"></script>
 <script>
 const out = document.getElementById("out");
@@ -55,6 +56,16 @@ test("бонус: есть цифра, заглавная и спецсимво�
   return true;
 });
 test("бонус: сгенерированный пароль проходит твою же checkStrength", () => strong(generatePassword(16)));
+
+section("generatePassphrase");
+test("4 слова + число и символ", () => /^([A-Z][a-z]+-){4}\d\d[^A-Za-z0-9]$/.test(generatePassphrase(4, "ru")));
+test("английские слова тоже работают", () => /^([A-Z][a-z]+-){5}\d\d[^A-Za-z0-9]$/.test(generatePassphrase(5, "en")));
+test("пароль из слов проходит checkStrength (100 попыток, ru и en)", () => {
+  for (let i = 0; i < 100; i++) {
+    if (!strong(generatePassphrase(3, "ru")) || !strong(generatePassphrase(3, "en"))) return false;
+  }
+  return true;
+});
 
 out.insertAdjacentHTML("beforeend", `<p class="score">Пройдено: ${passed} из ${total}</p>`);
 </script>

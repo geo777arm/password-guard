@@ -1,20 +1,20 @@
 // Генератор надёжного пароля.
 // Кнопка «Создать пароль» в окошке расширения вызывает эту функцию.
 
+// Случайное число от 0 до max-1. crypto.getRandomValues надёжнее Math.random:
+// его нельзя предсказать, поэтому им пользуются для паролей и ключей.
+function randomIndex(max) {
+  const array = new Uint32Array(1);
+  crypto.getRandomValues(array);
+  return array[0] % max;
+}
+
 function generatePassword(length) {
   const lower = "abcdefghijkmnopqrstuvwxyz";   // без l, чтобы не путать с 1
   const upper = "ABCDEFGHJKLMNPQRSTUVWXYZ";    // без I и O, чтобы не путать с 1 и 0
   const digits = "23456789";
   const symbols = "!@#$%^&*-_=+?";
   const all = lower + upper + digits + symbols;
-
-  // Случайное число от 0 до max-1. crypto.getRandomValues надёжнее Math.random:
-  // его нельзя предсказать, поэтому им пользуются для паролей и ключей.
-  function randomIndex(max) {
-    const array = new Uint32Array(1);
-    crypto.getRandomValues(array);
-    return array[0] % max;
-  }
 
   function randomChar(from) {
     return from[randomIndex(from.length)];
@@ -34,4 +34,19 @@ function generatePassword(length) {
   }
 
   return chars.join("");
+}
+
+// Запоминаемый пароль из случайных слов, например «Raketa-Oblako-Sharf-Pitstsa-47!».
+// Каждое слово выбирается из нескольких сотен, поэтому вариантов огромное число,
+// а человеку запомнить четыре слова гораздо проще, чем 16 случайных символов.
+function generatePassphrase(wordCount, lang) {
+  const list = WORDS[lang] || WORDS.en; // WORDS живёт в words.js
+  const symbols = "!#$%&*?@";
+  const words = [];
+  for (let i = 0; i < wordCount; i++) {
+    const word = list[randomIndex(list.length)];
+    words.push(word[0].toUpperCase() + word.slice(1));
+  }
+  const number = 10 + randomIndex(90);
+  return words.join("-") + "-" + number + symbols[randomIndex(symbols.length)];
 }

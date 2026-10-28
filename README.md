@@ -8,7 +8,7 @@ A browser extension that warns you, while you type, if your password has appeare
 - **Breach check.** Looks the password up in [Have I Been Pwned](https://haveibeenpwned.com/Passwords) (900M+ leaked passwords) without ever sending it.
 - **Reuse warning.** Notices when the same password is used on several sites.
 - **Strength tips.** Explains what makes a password weak: length, missing character types, common passwords, keyboard runs, repeated characters, years.
-- **Generator.** Creates a strong random password with `crypto.getRandomValues`.
+- **Generator.** Two modes: a random password (8–32 characters), or an easy-to-remember passphrase of 3–6 random words like `Kayak-Cookie-Galaxy-Broom-37!` (Russian words are written in Latin letters so every site accepts them). Uses `crypto.getRandomValues`.
 - **English and Russian.** Switch the language with the RU / EN toggle in the popup; warnings on websites follow it instantly.
 
 ## How the breach check stays private
@@ -21,6 +21,8 @@ For reuse detection, the extension stores a salted SHA-256 fingerprint per site 
 ![Leak warning](docs/2-leak.png)
 
 ![RU and EN interface](docs/popup-ru-en.png)
+
+![Passphrase generator](docs/passphrase-ru-en.png)
 
 ## Install
 Works in Chrome, Edge, Brave and other Chromium browsers.
@@ -35,10 +37,11 @@ Works in Chrome, Edge, Brave and other Chromium browsers.
 | `extension/content.js` | Finds password fields and shows the warning under them |
 | `extension/background.js` | Breach lookup (k-anonymity) and salted reuse fingerprints |
 | `extension/strength.js` | Password strength rules |
-| `extension/generator.js` | Secure password generator |
+| `extension/generator.js` | Secure password and passphrase generator |
+| `extension/words.js` | Word lists for passphrases (English and Russian) |
 | `extension/popup.*` | Toolbar popup with stats, the generator and the language toggle |
 | `extension/i18n.js` | English and Russian interface texts |
-| `extension/tests.html` | Open in a browser to run the unit tests (15 checks) |
+| `extension/tests.html` | Open in a browser to run the unit tests (18 checks) |
 
 ## Tech
 JavaScript, Chrome Extensions Manifest V3 (with `_locales` for English and Russian), Web Crypto API, Have I Been Pwned range API.

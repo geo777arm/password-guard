@@ -25,14 +25,20 @@
   <section class="card generator">
     <div class="section-head">
       <span class="card-title" data-i18n="generator"></span>
-      <span class="length-value"><span id="length-value">16</span> <span data-i18n="chars"></span></span>
+      <div class="segmented" role="group">
+        <button data-mode="random" data-i18n="modeRandom"></button><button data-mode="words" data-i18n="modeWords"></button>
+      </div>
+    </div>
+    <div class="section-head">
+      <span class="length-value"><span id="length-value">16</span> <span id="length-unit"></span></span>
     </div>
     <input type="range" id="length" min="8" max="32" value="16">
     <div class="output-row">
-      <input type="text" id="generated" readonly>
+      <textarea id="generated" rows="1" readonly></textarea>
       <button id="copy" class="ghost" data-i18n="copy"></button>
     </div>
     <button id="generate" class="primary" data-i18n="generate"></button>
+    <p id="generator-hint" class="gen-hint"></p>
   </section>
 
   <footer>
@@ -41,6 +47,7 @@
   </footer>
 
   <script src="i18n.js"></script>
+  <script src="words.js"></script>
   <script src="generator.js"></script>
   <script src="popup.js"></script>
 </body>
