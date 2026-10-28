@@ -93,6 +93,12 @@
       lines.push(t("howTo") + "<br>• " + tips.join("<br>• "));
     }
     if (lines.length === 0) lines.push(t("allGood"));
+    // Напоминаем про двухфакторку, пока человек не отметит её в окошке (twofa.js)
+    const twofa = twofaFor(location.hostname);
+    if (twofa && !fakeSite) {
+      const { twofaDone = [] } = await chrome.storage.local.get("twofaDone");
+      if (!twofaDone.includes(twofa.site)) lines.push(t("twofaHint", twofa.site));
+    }
     show(input, level, lines.join("<br>"));
   }
 

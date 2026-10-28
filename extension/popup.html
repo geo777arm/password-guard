@@ -6,39 +6,30 @@
 </head>
 <body>
   <header>
-    <img src="icons/icon48.png" alt="" width="32" height="32">
-    <div class="title">
-      <h1>Password Guard</h1>
-      <span class="subtitle" data-i18n="subtitle"></span>
-    </div>
+    <h1>Password Guard</h1>
     <div class="lang" role="group" aria-label="Language">
       <button data-lang="ru">RU</button><button data-lang="en">EN</button>
     </div>
   </header>
 
-  <section class="stats" aria-label="Stats">
-    <div class="stat"><span class="num" id="checked">0</span><span class="label" data-i18n="checked"></span></div>
-    <div class="stat bad"><span class="num" id="leaked">0</span><span class="label" data-i18n="leaked"></span></div>
-    <div class="stat"><span class="num" id="reused">0</span><span class="label" data-i18n="reused"></span></div>
+  <section class="hero" aria-label="Stats">
+    <div class="hero-top">
+      <span class="pill" data-i18n="subtitle"></span>
+    </div>
+    <div class="big"><span id="checked">0</span><i class="sq"></i></div>
+    <div class="hero-meta mono"><span data-i18n="checked"></span><span><span data-i18n="leaked"></span> <b id="leaked" class="bad">0</b> · <span data-i18n="reused"></span> <b id="reused">0</b></span></div>
+    <div class="track" aria-hidden="true"><span id="track-fill"></span></div>
   </section>
 
-  <nav class="tabs" role="tablist">
-    <button role="tab" data-tab="check">
-      <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
-      <span data-i18n="tabCheck"></span>
-    </button>
-    <button role="tab" data-tab="generate">
-      <svg viewBox="0 0 24 24"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
-      <span data-i18n="tabGenerate"></span>
-    </button>
-    <button role="tab" data-tab="about">
-      <svg viewBox="0 0 24 24"><path d="M12 3 4 6v6c0 5 3.5 8 8 9 4.5-1 8-4 8-9V6l-8-3z"/><path d="m9 12 2 2 4-4"/></svg>
-      <span data-i18n="tabAbout"></span>
-    </button>
+  <nav class="tabs mono" role="tablist">
+    <button role="tab" data-tab="check" data-i18n="tabCheck"></button>
+    <button role="tab" data-tab="generate" data-i18n="tabGenerate"></button>
+    <button role="tab" data-tab="twofa" data-i18n="tab2fa"></button>
+    <button role="tab" data-tab="about" data-i18n="tabAbout"></button>
   </nav>
 
   <section class="panel" data-panel="check" role="tabpanel">
-    <label for="check-input" class="field-label" data-i18n="checkTitle"></label>
+    <label for="check-input" class="field-label mono" data-i18n="checkTitle"></label>
     <form id="check-form">
       <div class="field">
         <input type="password" id="check-input" autocomplete="off" spellcheck="false">
@@ -68,6 +59,13 @@
     <p id="generator-hint" class="note"></p>
   </section>
 
+  <section class="panel" data-panel="twofa" role="tabpanel" hidden>
+    <div class="row"><span class="field-label mono" data-i18n="twofaTitle"></span><span class="mono count" id="twofa-count"></span></div>
+    <p class="note" data-i18n="twofaIntro"></p>
+    <ul id="twofa-list" class="twofa"></ul>
+    <p id="twofa-empty" class="note" data-i18n="twofaEmpty" hidden></p>
+  </section>
+
   <section class="panel" data-panel="about" role="tabpanel" hidden>
     <ul class="why">
       <li><svg viewBox="0 0 24 24"><path d="M12 3 4 6v6c0 5 3.5 8 8 9 4.5-1 8-4 8-9V6l-8-3Z"/><path d="M12 8v5M12 16.5v.01"/></svg><span data-i18n="why4"></span></li>
@@ -85,6 +83,7 @@
   <script src="strength.js"></script>
   <script src="words.js"></script>
   <script src="generator.js"></script>
+  <script src="twofa.js"></script>
   <script src="popup.js"></script>
 </body>
 </html>

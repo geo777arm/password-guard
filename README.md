@@ -8,6 +8,7 @@ A browser extension that warns you, while you type, if your password has appeare
 - **Breach check.** Looks the password up in [Have I Been Pwned](https://haveibeenpwned.com/Passwords) (900M+ leaked passwords) without ever sending it.
 - **Fake site warning.** Before you type, it checks the address for lookalikes of popular services: typos (`gtihub.com`), swapped characters (`g00gle.com`, `paypa1.com`, `rnicrosoft.com`), brand names hidden in subdomains (`paypal.com.secure-login.xyz`), letters from other alphabets (punycode) and raw IP addresses. If you type your real password for a site into its fake copy, it tells you to stop and change it.
 - **Unsafe form warning.** Warns when a page has no encryption (http), when a form would send the password unencrypted, or when it would send it to a different site.
+- **Two-factor reminder.** On sites like Google, Instagram, Steam or GitHub it reminds you to turn on two-factor login. The 2FA tab lists the sites you use with a direct link to the right settings page, and you can tick them off.
 - **Reuse warning.** Notices when the same password is used on several sites.
 - **Strength tips.** Explains what makes a password weak: length, missing character types, common passwords, keyboard runs, repeated characters, years.
 - **Manual check.** Type any password into the popup to see if it has leaked and how strong it is. Nothing is saved.

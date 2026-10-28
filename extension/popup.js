@@ -1,6 +1,42 @@
 async function renderStats() {
   const { stats = { checked: 0, leaked: 0, reused: 0 } } = await chrome.storage.local.get("stats");
   for (const key of ["checked", "leaked", "reused"]) document.getElementById(key).textContent = stats[key];
+  // полоска: какая доля проверенных паролей не нашлась в утечках
+  const safe = stats.checked ? (stats.checked - stats.leaked) / stats.checked * 100 : 0;
+  document.getElementById("track-fill").style.width = safe + "%";
+}
+
+// Вкладка 2FA: сайты, где человек вводил пароль и где можно включить вход по коду.
+async function renderTwofa() {
+  const { fingerprints = {}, twofaDone = [] } = await chrome.storage.local.get(["fingerprints", "twofaDone"]);
+  const sites = [...new Map(Object.keys(fingerprints).map(twofaFor).filter(Boolean).map(x => [x.site, x])).values()];
+  const list = document.getElementById("twofa-list");
+  list.replaceChildren();
+  for (const { site, url } of sites) {
+    const done = twofaDone.includes(site);
+    const li = document.createElement("li");
+    li.classList.toggle("done", done);
+    const name = document.createElement("span");
+    name.className = "mono";
+    name.textContent = site;
+    const link = document.createElement("a");
+    link.href = url; link.target = "_blank"; link.rel = "noopener";
+    link.textContent = t("twofaOpen") + " →";
+    const mark = document.createElement("button");
+    mark.className = "check";
+    mark.setAttribute("aria-pressed", done);
+    mark.textContent = done ? "✓ " + t("twofaDone") : t("twofaDone");
+    mark.addEventListener("click", async () => {
+      const next = done ? twofaDone.filter(s => s !== site) : [...twofaDone, site];
+      await chrome.storage.local.set({ twofaDone: next });
+      renderTwofa();
+    });
+    li.append(name, link, mark);
+    list.append(li);
+  }
+  document.getElementById("twofa-empty").hidden = sites.length > 0;
+  const doneCount = sites.filter(x => twofaDone.includes(x.site)).length;
+  document.getElementById("twofa-count").textContent = sites.length ? t("twofaLeft", doneCount, sites.length) : "";
 }
 
 // Подставляем тексты на выбранном языке во все элементы с data-i18n.
@@ -11,6 +47,7 @@ function renderTexts() {
   document.getElementById("check-input").placeholder = t("checkPlaceholder");
   for (const btn of document.querySelectorAll("[data-lang]")) btn.classList.toggle("active", btn.dataset.lang === LANG);
   renderLength();
+  renderTwofa();
 }
 
 for (const btn of document.querySelectorAll("[data-lang]")) {
@@ -78,6 +115,7 @@ document.getElementById("reset").addEventListener("click", async () => {
   await chrome.storage.local.clear();
   await chrome.storage.local.set({ lang: LANG });
   renderStats();
+  renderTwofa();
 });
 
 // Ручная проверка пароля: хэш считается здесь, в базу уходят только первые 5 символов.
@@ -141,7 +179,7 @@ function showTab(name) {
 for (const btn of document.querySelectorAll("[data-tab]")) btn.addEventListener("click", () => showTab(btn.dataset.tab));
 let savedTab = "check";
 try { savedTab = localStorage.getItem("pg-tab") || "check"; } catch {}
-showTab(["check", "generate", "about"].includes(savedTab) ? savedTab : "check");
+showTab(["check", "generate", "twofa", "about"].includes(savedTab) ? savedTab : "check");
 
 let savedMode = "random";
 try { savedMode = localStorage.getItem("pg-mode") || "random"; } catch {}
