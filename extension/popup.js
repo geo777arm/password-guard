@@ -128,6 +128,21 @@ document.getElementById("check-form").addEventListener("submit", async event => 
 // Если поменяли пароль после проверки, старый результат больше не про него.
 checkInput.addEventListener("input", () => { checkResult.hidden = true; });
 
+// Вкладки: на экране всегда один раздел, чтобы окошко не было перегружено.
+function showTab(name) {
+  for (const btn of document.querySelectorAll("[data-tab]")) {
+    const active = btn.dataset.tab === name;
+    btn.classList.toggle("active", active);
+    btn.setAttribute("aria-selected", active);
+  }
+  for (const panel of document.querySelectorAll("[data-panel]")) panel.hidden = panel.dataset.panel !== name;
+  try { localStorage.setItem("pg-tab", name); } catch {}
+}
+for (const btn of document.querySelectorAll("[data-tab]")) btn.addEventListener("click", () => showTab(btn.dataset.tab));
+let savedTab = "check";
+try { savedTab = localStorage.getItem("pg-tab") || "check"; } catch {}
+showTab(["check", "generate", "about"].includes(savedTab) ? savedTab : "check");
+
 let savedMode = "random";
 try { savedMode = localStorage.getItem("pg-mode") || "random"; } catch {}
 setMode(MODES[savedMode] ? savedMode : "random");

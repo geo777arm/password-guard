@@ -6,7 +6,7 @@
 </head>
 <body>
   <header>
-    <img src="icons/icon48.png" alt="" width="28" height="28">
+    <img src="icons/icon48.png" alt="" width="32" height="32">
     <div class="title">
       <h1>Password Guard</h1>
       <span class="subtitle" data-i18n="subtitle"></span>
@@ -16,54 +16,69 @@
     </div>
   </header>
 
-  <section class="stats">
+  <section class="stats" aria-label="Stats">
     <div class="stat"><span class="num" id="checked">0</span><span class="label" data-i18n="checked"></span></div>
     <div class="stat bad"><span class="num" id="leaked">0</span><span class="label" data-i18n="leaked"></span></div>
     <div class="stat"><span class="num" id="reused">0</span><span class="label" data-i18n="reused"></span></div>
   </section>
 
-  <section class="card checker">
-    <span class="card-title" data-i18n="checkTitle"></span>
-    <form id="check-form" class="output-row">
-      <input type="password" id="check-input" autocomplete="off" spellcheck="false">
-      <button type="button" id="check-show" class="ghost icon" aria-label="Show password"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg></button>
-      <button type="submit" id="check-btn" class="ghost" data-i18n="checkBtn"></button>
+  <nav class="tabs" role="tablist">
+    <button role="tab" data-tab="check">
+      <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+      <span data-i18n="tabCheck"></span>
+    </button>
+    <button role="tab" data-tab="generate">
+      <svg viewBox="0 0 24 24"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+      <span data-i18n="tabGenerate"></span>
+    </button>
+    <button role="tab" data-tab="about">
+      <svg viewBox="0 0 24 24"><path d="M12 3 4 6v6c0 5 3.5 8 8 9 4.5-1 8-4 8-9V6l-8-3z"/><path d="m9 12 2 2 4-4"/></svg>
+      <span data-i18n="tabAbout"></span>
+    </button>
+  </nav>
+
+  <section class="panel" data-panel="check" role="tabpanel">
+    <label for="check-input" class="field-label" data-i18n="checkTitle"></label>
+    <form id="check-form">
+      <div class="field">
+        <input type="password" id="check-input" autocomplete="off" spellcheck="false">
+        <button type="button" id="check-show" class="field-icon" aria-label="Show password">
+          <svg viewBox="0 0 24 24"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>
+        </button>
+      </div>
+      <button type="submit" id="check-btn" class="primary" data-i18n="checkBtn"></button>
     </form>
     <div id="check-result" class="check-result" hidden></div>
+    <p class="note" data-i18n="autoNote"></p>
   </section>
 
-  <section class="card generator">
-    <div class="section-head">
-      <span class="card-title" data-i18n="generator"></span>
+  <section class="panel" data-panel="generate" role="tabpanel" hidden>
+    <div class="row">
       <div class="segmented" role="group">
         <button data-mode="random" data-i18n="modeRandom"></button><button data-mode="words" data-i18n="modeWords"></button>
       </div>
-    </div>
-    <div class="section-head">
       <span class="length-value"><span id="length-value">16</span> <span id="length-unit"></span></span>
     </div>
-    <input type="range" id="length" min="8" max="32" value="16">
-    <div class="output-row">
+    <input type="range" id="length" min="8" max="32" value="16" aria-label="Length">
+    <div class="field">
       <textarea id="generated" rows="1" readonly></textarea>
-      <button id="copy" class="ghost" data-i18n="copy"></button>
+      <button id="copy" class="field-icon text" data-i18n="copy"></button>
     </div>
     <button id="generate" class="primary" data-i18n="generate"></button>
-    <p id="generator-hint" class="gen-hint"></p>
+    <p id="generator-hint" class="note"></p>
   </section>
 
-  <details class="why">
-    <summary><span data-i18n="whyTitle"></span></summary>
-    <ul>
-      <li data-i18n="why1"></li>
-      <li data-i18n="why2"></li>
-      <li data-i18n="why3"></li>
+  <section class="panel" data-panel="about" role="tabpanel" hidden>
+    <ul class="why">
+      <li><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg><span data-i18n="why1"></span></li>
+      <li><svg viewBox="0 0 24 24"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg><span data-i18n="why2"></span></li>
+      <li><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="m5.6 5.6 12.8 12.8"/></svg><span data-i18n="why3"></span></li>
     </ul>
-    <a href="https://github.com/geo777arm/password-guard" target="_blank" rel="noopener" data-i18n="whyCode"></a>
-  </details>
-
-  <footer>
-    <button id="reset" class="link" data-i18n="reset"></button>
-  </footer>
+    <div class="row">
+      <a href="https://github.com/geo777arm/password-guard" target="_blank" rel="noopener" data-i18n="whyCode"></a>
+      <button id="reset" class="link" data-i18n="reset"></button>
+    </div>
+  </section>
 
   <script src="i18n.js"></script>
   <script src="strength.js"></script>
