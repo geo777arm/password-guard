@@ -20,12 +20,11 @@ For reuse detection, the extension stores a salted SHA-256 fingerprint per site 
 ![Leak warning](docs/2-leak.png)
 
 ## Install
-**From the store:** Microsoft Edge Add-ons (link coming after review).
-
-**From source (Chrome or Edge):**
-1. Download this repository and unzip it.
+Works in Chrome, Edge, Brave and other Chromium browsers.
+1. Download `password-guard.zip` from the [latest release](https://github.com/geo777arm/password-guard/releases/latest) and unzip it.
 2. Open `chrome://extensions` (or `edge://extensions`) and turn on Developer mode.
-3. Click "Load unpacked" and choose the `extension` folder.
+3. Click "Load unpacked" and choose the unzipped folder.
+4. Open any login page and start typing a password. Try `password123` to see a leak warning.
 
 ## Project structure
 | File | What it does |
