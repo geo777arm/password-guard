@@ -62,3 +62,5 @@ This is my second cybersecurity project after a [phishing email detector](https:
 
 ## Author
 [geo777arm](https://github.com/geo777arm). Also see my [phishing email detector](https://github.com/geo777arm/phish-detector).
+
+Fonts: [Inter Tight](https://fonts.google.com/specimen/Inter+Tight) and [JetBrains Mono](https://fonts.google.com/specimen/JetBrains+Mono), both under the SIL Open Font License, bundled in `extension/fonts/` so nothing is loaded from the internet.
