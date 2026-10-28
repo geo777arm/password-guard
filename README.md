@@ -9,6 +9,7 @@ A browser extension that warns you, while you type, if your password has appeare
 - **Fake site warning.** Before you type, it checks the address for lookalikes of popular services: typos (`gtihub.com`), swapped characters (`g00gle.com`, `paypa1.com`, `rnicrosoft.com`), brand names hidden in subdomains (`paypal.com.secure-login.xyz`), letters from other alphabets (punycode) and raw IP addresses. If you type your real password for a site into its fake copy, it tells you to stop and change it.
 - **Unsafe form warning.** Warns when a page has no encryption (http), when a form would send the password unencrypted, or when it would send it to a different site.
 - **Two-factor reminder.** On sites like Google, Instagram, Steam or GitHub it reminds you to turn on two-factor login. The 2FA tab lists the sites you use with a direct link to the right settings page, and you can tick them off.
+- **Digital footprint (self-check).** A checklist for your *own* data: see whether your email or phone appeared in breaches (via the official Have I Been Pwned site), turn on breach alerts, remove your phone or address from Google Search, close social profiles, hide your number in Telegram, delete old accounts. Each step links to the official page; the extension never looks anyone up.
 - **Reuse warning.** Notices when the same password is used on several sites.
 - **Strength tips.** Explains what makes a password weak: length, missing character types, common passwords, keyboard runs, repeated characters, years.
 - **Manual check.** Type any password into the popup to see if it has leaked and how strong it is. Nothing is saved.
@@ -17,6 +18,8 @@ A browser extension that warns you, while you type, if your password has appeare
 - **English and Russian.** Switch the language with the RU / EN toggle in the popup; warnings on websites follow it instantly.
 
 ![Fake site, http page and foreign form warnings](docs/site-protection.png)
+
+![Digital footprint checklist](docs/footprint.png)
 
 ## How the breach check stays private
 1. The extension computes the SHA-1 hash of the password locally.

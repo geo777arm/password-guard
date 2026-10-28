@@ -46,9 +46,11 @@ h1 { font-size: 22px; font-weight: 700; letter-spacing: -.02em; line-height: 1; 
 .track span::after { content: ""; position: absolute; right: -4px; top: -3px; width: 8px; height: 8px; border-radius: 50%; background: var(--fg); }
 
 /* вкладки */
-.tabs { display: grid; grid-template-columns: repeat(4, 1fr); border-bottom: var(--bw) solid var(--border); }
-.tabs button { border: 0; background: none; color: var(--fg-dim); font: 600 10.5px/1 var(--mono); letter-spacing: .1em; text-transform: uppercase; padding: 10px 2px 11px; border-bottom: 1.5px solid transparent; margin-bottom: -1px; transition: color var(--ease), border-color var(--ease); }
+.tabs { display: flex; justify-content: space-between; border-bottom: var(--bw) solid var(--border); }
+.tabs button { border: 0; background: none; color: var(--fg-dim); font: 600 10px/1 var(--mono); letter-spacing: .08em; text-transform: uppercase; padding: 10px 2px 11px; border-bottom: 1.5px solid transparent; margin-bottom: -1px; transition: color var(--ease), border-color var(--ease); }
 .tabs button:hover { color: var(--fg); }
+.tabs .tab-icon { display: flex; align-items: center; padding: 8px 4px 9px; }
+.tabs .tab-icon svg { width: 15px; height: 15px; stroke-width: 1.6; }
 .tabs button.active { color: var(--fg); border-bottom-color: var(--accent); }
 
 .panel { display: flex; flex-direction: column; gap: 12px; }
@@ -118,3 +120,12 @@ html[lang=en] .check-result[data-level="bad"]::before { content: "● DANGER"; }
 .why svg { margin-top: 2px; color: var(--accent-text); }
 .panel a { font: 600 10.5px/1 var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--accent-text); text-decoration: none; white-space: nowrap; }
 .panel a:hover { text-decoration: underline; }
+
+/* цифровой след */
+.trace li { grid-template-columns: minmax(0, 1fr) auto; align-items: start; }
+.trace li > div { display: flex; flex-direction: column; gap: 3px; }
+.trace b { font-size: 13px; font-weight: 600; }
+.trace span { font-size: 12px; color: var(--fg-muted); line-height: 1.45; }
+.trace a { margin-top: 4px; }
+.trace li.done b { color: var(--fg-muted); text-decoration: line-through; text-decoration-thickness: .5px; }
+.trace li.done span, .trace li.done a { display: none; }

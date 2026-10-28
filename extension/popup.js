@@ -43,11 +43,52 @@ async function renderTwofa() {
 function renderTexts() {
   document.documentElement.lang = LANG;
   for (const el of document.querySelectorAll("[data-i18n]")) el.textContent = t(el.dataset.i18n);
+  for (const el of document.querySelectorAll("[data-i18n-label]")) el.setAttribute("aria-label", t(el.dataset.i18nLabel));
   document.getElementById("generated").placeholder = t("placeholder");
   document.getElementById("check-input").placeholder = t("checkPlaceholder");
   for (const btn of document.querySelectorAll("[data-lang]")) btn.classList.toggle("active", btn.dataset.lang === LANG);
   renderLength();
   renderTwofa();
+  renderTrace();
+}
+
+// Вкладка «След»: шаги, чтобы проверить и убрать свои данные из сети (footprint.js).
+async function renderTrace() {
+  const { traceDone = [] } = await chrome.storage.local.get("traceDone");
+  const list = document.getElementById("trace-list");
+  list.replaceChildren();
+  for (const { id, url } of FOOTPRINT) {
+    const [title, desc] = t("trace_" + id);
+    const done = traceDone.includes(id);
+    const li = document.createElement("li");
+    li.classList.toggle("done", done);
+    const text = document.createElement("div");
+    const name = document.createElement("b");
+    name.textContent = title;
+    const note = document.createElement("span");
+    note.textContent = desc;
+    text.append(name, note);
+    li.append(text);
+    if (url) {
+      const link = document.createElement("a");
+      link.href = url; link.target = "_blank"; link.rel = "noopener";
+      link.textContent = t("traceOpen") + " →";
+      text.append(link);
+    }
+    const mark = document.createElement("button");
+    mark.className = "check";
+    mark.setAttribute("aria-pressed", done);
+    mark.textContent = done ? "✓" : t("twofaDone");
+    mark.addEventListener("click", async () => {
+      const next = done ? traceDone.filter(x => x !== id) : [...traceDone, id];
+      await chrome.storage.local.set({ traceDone: next });
+      renderTrace();
+    });
+    li.append(mark);
+    list.append(li);
+  }
+  const doneCount = FOOTPRINT.filter(x => traceDone.includes(x.id)).length;
+  document.getElementById("trace-count").textContent = t("twofaLeft", doneCount, FOOTPRINT.length);
 }
 
 for (const btn of document.querySelectorAll("[data-lang]")) {
@@ -116,6 +157,7 @@ document.getElementById("reset").addEventListener("click", async () => {
   await chrome.storage.local.set({ lang: LANG });
   renderStats();
   renderTwofa();
+  renderTrace();
 });
 
 // Ручная проверка пароля: хэш считается здесь, в базу уходят только первые 5 символов.
@@ -179,7 +221,7 @@ function showTab(name) {
 for (const btn of document.querySelectorAll("[data-tab]")) btn.addEventListener("click", () => showTab(btn.dataset.tab));
 let savedTab = "check";
 try { savedTab = localStorage.getItem("pg-tab") || "check"; } catch {}
-showTab(["check", "generate", "twofa", "about"].includes(savedTab) ? savedTab : "check");
+showTab(["check", "generate", "twofa", "trace", "about"].includes(savedTab) ? savedTab : "check");
 
 let savedMode = "random";
 try { savedMode = localStorage.getItem("pg-mode") || "random"; } catch {}

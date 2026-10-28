@@ -26,7 +26,8 @@
     <button role="tab" data-tab="check" data-i18n="tabCheck"></button>
     <button role="tab" data-tab="generate" data-i18n="tabGenerate"></button>
     <button role="tab" data-tab="twofa" data-i18n="tab2fa"></button>
-    <button role="tab" data-tab="about" data-i18n="tabAbout"></button>
+    <button role="tab" data-tab="trace" data-i18n="tabTrace"></button>
+    <button role="tab" data-tab="about" class="tab-icon" data-i18n-label="tabAbout"><svg viewBox="0 0 24 24"><path d="M12 3 4 6v6c0 5 3.5 8 8 9 4.5-1 8-4 8-9V6l-8-3z"/><path d="m9 12 2 2 4-4"/></svg></button>
   </nav>
 
   <section class="panel" data-panel="check" role="tabpanel">
@@ -67,6 +68,12 @@
     <p id="twofa-empty" class="note" data-i18n="twofaEmpty" hidden></p>
   </section>
 
+  <section class="panel" data-panel="trace" role="tabpanel" hidden>
+    <div class="row"><span class="field-label mono" data-i18n="traceTitle"></span><span class="mono count" id="trace-count"></span></div>
+    <p class="note" data-i18n="traceIntro"></p>
+    <ul id="trace-list" class="twofa trace"></ul>
+  </section>
+
   <section class="panel" data-panel="about" role="tabpanel" hidden>
     <ul class="why">
       <li><svg viewBox="0 0 24 24"><path d="M12 3 4 6v6c0 5 3.5 8 8 9 4.5-1 8-4 8-9V6l-8-3Z"/><path d="M12 8v5M12 16.5v.01"/></svg><span data-i18n="why4"></span></li>
@@ -85,6 +92,7 @@
   <script src="words.js"></script>
   <script src="generator.js"></script>
   <script src="twofa.js"></script>
+  <script src="footprint.js"></script>
   <script src="popup.js"></script>
 </body>
 </html>
