@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <header>
+    <img src="icons/icon48.png" alt="" width="28" height="28">
+    <div class="title">
+      <h1>Password Guard</h1>
+      <span class="subtitle">Защита паролей включена</span>
+    </div>
+  </header>
+
+  <section class="stats">
+    <div class="stat"><span class="num" id="checked">0</span><span class="label">Проверено</span></div>
+    <div class="stat bad"><span class="num" id="leaked">0</span><span class="label">В утечках</span></div>
+    <div class="stat"><span class="num" id="reused">0</span><span class="label">Повторы</span></div>
+  </section>
+
+  <section class="card generator">
+    <div class="section-head">
+      <span class="card-title">Генератор пароля</span>
+      <span class="length-value"><span id="length-value">16</span> символов</span>
+    </div>
+    <input type="range" id="length" min="8" max="32" value="16">
+    <div class="output-row">
+      <input type="text" id="generated" readonly placeholder="Нажми «Создать пароль»">
+      <button id="copy" class="ghost" title="Скопировать">Копировать</button>
+    </div>
+    <button id="generate" class="primary">Создать пароль</button>
+    <p id="generator-hint" class="hint" hidden></p>
+  </section>
+
+  <footer>
+    <p class="privacy">Пароли не сохраняются и не отправляются. В базу утечек уходят только первые 5 символов хэша.</p>
+    <button id="reset" class="link">Сбросить</button>
+  </footer>
+
+  <script src="generator.js"></script>
+  <script src="popup.js"></script>
+</body>
+</html>

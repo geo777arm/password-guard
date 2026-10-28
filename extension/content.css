@@ -1,0 +1,19 @@
+.pg-badge {
+  position: absolute; z-index: 2147483647;
+  font: 12px/1.45 -apple-system, BlinkMacSystemFont, "SF Pro Text", "Inter", "Helvetica Neue", sans-serif;
+  padding: 10px 14px 10px 30px; border-radius: 14px;
+  background: rgba(17, 19, 38, .98); color: #eef0ff;
+  border: 1px solid rgba(255,255,255,.1);
+  backdrop-filter: blur(12px);
+  box-shadow: 0 10px 30px rgba(20, 10, 60, .35); pointer-events: none;
+}
+.pg-badge::before {
+  content: ""; position: absolute; left: 13px; top: 15px;
+  width: 8px; height: 8px; border-radius: 50%; background: var(--pg-dot, #8a8fb0); box-shadow: 0 0 8px var(--pg-dot, #8a8fb0);
+}
+.pg-badge[hidden] { display: none; }
+.pg-badge b { font-weight: 600; }
+.pg-badge[data-level="info"] { --pg-dot: #8b7cf6; }
+.pg-badge[data-level="ok"]   { --pg-dot: #5ee0a8; }
+.pg-badge[data-level="warn"] { --pg-dot: #ffc06b; }
+.pg-badge[data-level="bad"]  { --pg-dot: #ff7a90; }

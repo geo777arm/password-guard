@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<title>Проверка твоих функций</title>
+<style>
+  body { font: 15px/1.5 -apple-system, sans-serif; background: #0f1020; color: #f4f4fb; max-width: 720px; margin: 32px auto; padding: 0 16px; }
+  h1 { font-size: 22px; } h2 { font-size: 17px; margin-top: 28px; color: #c4b5fd; }
+  .row { padding: 6px 10px; border-radius: 8px; margin: 4px 0; background: #1a1b33; }
+  .pass::before { content: "✅ "; } .fail::before { content: "❌ "; }
+  .fail { color: #fca5a5; } code { color: #f9a8d4; }
+  .score { font-size: 18px; font-weight: 700; margin-top: 24px; }
+</style>
+</head>
+<body>
+<h1>🧪 Проверка твоих функций</h1>
+<p>Открой этот файл в браузере после каждого изменения (или обнови страницу). Цель: все галочки зелёные.</p>
+<div id="out"></div>
+<script src="strength.js"></script>
+<script src="generator.js"></script>
+<script>
+const out = document.getElementById("out");
+let passed = 0, total = 0;
+function section(title) { out.insertAdjacentHTML("beforeend", `<h2>${title}</h2>`); }
+function test(name, fn) {
+  total++;
+  let ok = false, note = "";
+  try { ok = fn(); } catch (e) { note = ` (ошибка: ${e.message})`; }
+  if (ok) passed++;
+  out.insertAdjacentHTML("beforeend", `<div class="row ${ok ? "pass" : "fail"}">${name}${note}</div>`);
+}
+const weak = p => checkStrength(p).length > 0;
+const strong = p => checkStrength(p).length === 0;
+
+section("checkStrength — слабые пароли должны получать советы");
+for (const p of ["abc", "qwerty123456", "password2010", "123456789012", "aaaaaaaaaaaa", "Йцукен123456", "15052010Anna"]) {
+  test(`<code>${p}</code> — слабый`, () => weak(p));
+}
+section("checkStrength — сильные пароли без советов");
+for (const p of ["Tr0ub4dor&3-horse!", "k9#Vm!2pQx@Lw7z", "Owl-Flies-At-7am!"]) {
+  test(`<code>${p}</code> — сильный`, () => strong(p));
+}
+
+section("generatePassword");
+test("возвращает строку нужной длины (16)", () => generatePassword(16).length === 16);
+test("возвращает строку нужной длины (24)", () => generatePassword(24).length === 24);
+test("каждый раз новый пароль", () => generatePassword(16) !== generatePassword(16));
+test("бонус: есть цифра, заглавная и спецсимвол", () => {
+  for (let i = 0; i < 50; i++) {
+    const p = generatePassword(12);
+    if (!/\d/.test(p) || !/[A-Z]/.test(p) || !/[^A-Za-z0-9]/.test(p)) return false;
+  }
+  return true;
+});
+test("бонус: сгенерированный пароль проходит твою же checkStrength", () => strong(generatePassword(16)));
+
+out.insertAdjacentHTML("beforeend", `<p class="score">Пройдено: ${passed} из ${total}</p>`);
+</script>
+</body>
+</html>
