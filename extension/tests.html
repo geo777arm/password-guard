@@ -21,6 +21,7 @@
 <script src="strength.js"></script>
 <script src="words.js"></script>
 <script src="generator.js"></script>
+<script src="sitecheck.js"></script>
 <script>
 const out = document.getElementById("out");
 let passed = 0, total = 0;
@@ -66,6 +67,25 @@ test("пароль из слов проходит checkStrength (100 попыт�
   }
   return true;
 });
+
+section("checkSite — поддельные сайты");
+const keys = h => checkSite(h).map(w => w.key).join(",");
+for (const h of ["accounts.google.com", "github.com", "google.de", "mail.ru", "wikipedia.org", "steamcommunity.com"]) {
+  test(`<code>${h}</code> — настоящий`, () => keys(h) === "");
+}
+for (const h of ["g00gle.com", "paypa1.com", "rnicrosoft.com", "gtihub.com", "instagrarn.com", "gosusIugi.ru"]) {
+  test(`<code>${h}</code> — подделка`, () => keys(h) === "siteFake");
+}
+test("<code>paypal.com.secure-login.xyz</code> — похожий адрес", () => keys("paypal.com.secure-login.xyz") === "siteSimilar");
+test("<code>xn--pple-43d.com</code> — буквы из другого алфавита", () => keys("xn--pple-43d.com").includes("sitePunycode"));
+test("<code>192.168.1.1</code> — цифровой адрес", () => keys("192.168.1.1") === "siteIp");
+
+section("checkForm — опасные формы");
+const fkeys = (p, a) => checkForm(p, a).map(w => w.key).join(",");
+test("страница http — опасно", () => fkeys("http://shop.com/login", null) === "formHttp");
+test("форма шлёт пароль по http — опасно", () => fkeys("https://shop.com/login", "http://shop.com/auth") === "formActionHttp");
+test("форма шлёт пароль на чужой сайт", () => fkeys("https://shop.com/login", "https://evil.ru/steal") === "formOther");
+test("обычная форма https — всё хорошо", () => fkeys("https://www.shop.com/login", "/auth") === "");
 
 out.insertAdjacentHTML("beforeend", `<p class="score">Пройдено: ${passed} из ${total}</p>`);
 </script>

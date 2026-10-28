@@ -28,6 +28,28 @@
     badge.hidden = false;
   }
 
+  const RANK = { info: 0, ok: 1, warn: 2, bad: 3 };
+  const escape = s => s.replace(/[&<>"]/g, c => `&#${c.charCodeAt(0)};`);
+
+  // Поддельный сайт или форма без шифрования (sitecheck.js)
+  function pageWarnings(input) {
+    const action = input.form ? input.form.getAttribute("action") : null;
+    return [...checkSite(location.hostname), ...checkForm(location.href, action)]
+      .map(w => ({ level: w.level, text: t(w.key, ...w.args.map(escape)) }));
+  }
+
+  function worst(levels) {
+    return levels.reduce((a, b) => (RANK[b] > RANK[a] ? b : a), "ok");
+  }
+
+  // Предупреждаем ещё до того, как человек начал вводить пароль.
+  async function warnOnFocus(input) {
+    await loadLang();
+    const warnings = pageWarnings(input);
+    if (warnings.length === 0 || input.value) return;
+    show(input, worst(warnings.map(w => w.level)), warnings.map(w => w.text).join("<br>"));
+  }
+
   async function check(input) {
     const pw = input.value;
     if (!pw || pw.length < 4 || checked.get(input) === pw) return;
@@ -39,7 +61,8 @@
       type: "check",
       sha1: await sha1(pw),
       password: pw,
-      site: location.hostname
+      site: location.hostname,
+      suspicious: checkSite(location.hostname).some(w => w.level === "bad")
     }).catch(e => ({ ok: false, error: String(e) }));
 
     if (input.value !== pw) return; // пароль успели поменять
@@ -48,13 +71,18 @@
       return;
     }
 
-    const lines = [];
-    let level = "ok";
+    const warnings = pageWarnings(input);
+    const lines = warnings.map(w => w.text);
+    let level = worst(warnings.map(w => w.level));
     if (response.leaks > 0) {
       level = "bad";
       lines.push(t("leak", response.leaks));
     }
-    if (response.otherSites.length > 0) {
+    const fakeSite = checkSite(location.hostname).some(w => w.level === "bad");
+    if (response.otherSites.length > 0 && fakeSite) {
+      level = "bad";
+      lines.push(t("phished", response.otherSites.slice(0, 3).join(", ")));
+    } else if (response.otherSites.length > 0) {
       if (level === "ok") level = "warn";
       lines.push(t("reuse", response.otherSites.slice(0, 3).join(", ")));
     }
@@ -74,6 +102,11 @@
     if (!(el instanceof HTMLInputElement) || el.type !== "password") return;
     clearTimeout(timer);
     timer = setTimeout(() => check(el), 900);
+  }, true);
+
+  document.addEventListener("focusin", e => {
+    const el = e.target;
+    if (el instanceof HTMLInputElement && el.type === "password") warnOnFocus(el);
   }, true);
 
   document.addEventListener("focusout", e => {

@@ -6,12 +6,16 @@ A browser extension that warns you, while you type, if your password has appeare
 
 ## Features
 - **Breach check.** Looks the password up in [Have I Been Pwned](https://haveibeenpwned.com/Passwords) (900M+ leaked passwords) without ever sending it.
+- **Fake site warning.** Before you type, it checks the address for lookalikes of popular services: typos (`gtihub.com`), swapped characters (`g00gle.com`, `paypa1.com`, `rnicrosoft.com`), brand names hidden in subdomains (`paypal.com.secure-login.xyz`), letters from other alphabets (punycode) and raw IP addresses. If you type your real password for a site into its fake copy, it tells you to stop and change it.
+- **Unsafe form warning.** Warns when a page has no encryption (http), when a form would send the password unencrypted, or when it would send it to a different site.
 - **Reuse warning.** Notices when the same password is used on several sites.
 - **Strength tips.** Explains what makes a password weak: length, missing character types, common passwords, keyboard runs, repeated characters, years.
 - **Manual check.** Type any password into the popup to see if it has leaked and how strong it is. Nothing is saved.
 - **"Why is this safe?"** A short explanation right in the popup, with a link to this source code.
 - **Generator.** Two modes: a random password (8–32 characters), or an easy-to-remember passphrase of 3–6 random words like `Kayak-Cookie-Galaxy-Broom-37!` (Russian words are written in Latin letters so every site accepts them). Uses `crypto.getRandomValues`.
 - **English and Russian.** Switch the language with the RU / EN toggle in the popup; warnings on websites follow it instantly.
+
+![Fake site, http page and foreign form warnings](docs/site-protection.png)
 
 ## How the breach check stays private
 1. The extension computes the SHA-1 hash of the password locally.

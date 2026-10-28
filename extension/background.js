@@ -31,14 +31,16 @@ async function sha256(text) {
 }
 
 // Запоминаем отпечаток пароля для сайта и возвращаем другие сайты с тем же паролем.
-async function checkReuse(password, site) {
+async function checkReuse(password, site, save = true) {
   const fingerprint = await sha256((await getSalt()) + password);
   const { fingerprints = {} } = await chrome.storage.local.get("fingerprints");
   const otherSites = Object.entries(fingerprints)
     .filter(([s, fp]) => s !== site && fp === fingerprint)
     .map(([s]) => s);
-  fingerprints[site] = fingerprint;
-  await chrome.storage.local.set({ fingerprints });
+  if (save) { // поддельные сайты не запоминаем, чтобы они не попадали в список повторов
+    fingerprints[site] = fingerprint;
+    await chrome.storage.local.set({ fingerprints });
+  }
   return otherSites;
 }
 
@@ -63,7 +65,7 @@ chrome.runtime.onMessage.addListener((msg, _sender, sendResponse) => {
     try {
       const [leaks, otherSites] = await Promise.all([
         countLeaks(msg.sha1),
-        checkReuse(msg.password, msg.site)
+        checkReuse(msg.password, msg.site, !msg.suspicious)
       ]);
       await bumpStats(leaks > 0, otherSites.length > 0);
       sendResponse({ ok: true, leaks, otherSites });
