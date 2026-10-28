@@ -1,5 +1,5 @@
 // Проверка силы пароля.
-// Возвращает массив советов. Пустой массив значит «пароль сильный».
+// Возвращает массив советов на текущем языке (t из i18n.js). Пустой массив значит «пароль сильный».
 
 const COMMON_PASSWORDS = [
   "123456", "password", "qwerty", "111111", "iloveyou", "admin", "welcome",
@@ -13,22 +13,22 @@ function checkStrength(password) {
   const lower = password.toLowerCase();
 
   if (password.length < 12) {
-    tips.push("Сделай пароль длиннее, хотя бы 12 символов.");
+    tips.push(t("tipLength"));
   }
   if (!/\d/.test(password)) {
-    tips.push("Добавь цифры.");
+    tips.push(t("tipDigits"));
   }
   if (!/[A-ZА-ЯЁ]/.test(password) || !/[a-zа-яё]/.test(password)) {
-    tips.push("Используй и большие, и маленькие буквы.");
+    tips.push(t("tipCase"));
   }
   if (!/[^A-Za-zА-Яа-яЁё0-9]/.test(password)) {
-    tips.push("Добавь спецсимвол, например ! или #.");
+    tips.push(t("tipSymbol"));
   }
 
   // Популярные пароли хакеры пробуют первыми.
   for (const common of COMMON_PASSWORDS) {
     if (lower.includes(common)) {
-      tips.push(`«${common}» — один из самых популярных паролей, его подберут первым.`);
+      tips.push(t("tipCommon", common));
       break;
     }
   }
@@ -37,7 +37,7 @@ function checkStrength(password) {
   outer: for (const row of KEYBOARD_ROWS) {
     for (let i = 0; i + 4 <= row.length; i++) {
       if (lower.includes(row.slice(i, i + 4))) {
-        tips.push("Не используй подряд идущие клавиши вроде «qwer» или «1234».");
+        tips.push(t("tipKeyboard"));
         break outer;
       }
     }
@@ -45,12 +45,12 @@ function checkStrength(password) {
 
   // Один символ 4 раза подряд: «aaaa», «1111».
   if (/(.)\1{3,}/.test(password)) {
-    tips.push("Не повторяй один символ много раз подряд.");
+    tips.push(t("tipRepeat"));
   }
 
   // Похоже на год или дату рождения: 1950–2029.
   if (/(19[5-9]\d|20[0-2]\d)/.test(password)) {
-    tips.push("Не используй год рождения или дату: их легко угадать.");
+    tips.push(t("tipYear"));
   }
 
   return tips;

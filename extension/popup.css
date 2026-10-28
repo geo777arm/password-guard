@@ -47,3 +47,8 @@ footer { display: flex; align-items: center; gap: 12px; padding: 0 2px; }
   --accent:#8b7cf6; --btn:linear-gradient(135deg,#7c6cf5,#4f8df7); --btn-fg:#fff; --bad:#ff7a90; --ok:#5ee0a8; --r:18px; }
 body { background: radial-gradient(120% 60% at 0% 0%, #241c55 0%, transparent 60%), radial-gradient(100% 60% at 100% 100%, #10305a 0%, transparent 60%), var(--bg); }
 .stat, .card { backdrop-filter: blur(12px); }
+header .title { flex: 1; }
+.lang { display: flex; padding: 3px; gap: 2px; border-radius: 10px; background: var(--field); border: 1px solid var(--line); align-self: center; }
+.lang button { border: 0; background: none; color: var(--muted); font-size: 11px; font-weight: 600; padding: 4px 8px; border-radius: 7px; }
+.lang button.active { background: var(--btn); color: var(--btn-fg); }
+.lang button:not(.active):hover { color: var(--fg); }

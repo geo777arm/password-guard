@@ -32,7 +32,8 @@
     const pw = input.value;
     if (!pw || pw.length < 4 || checked.get(input) === pw) return;
     checked.set(input, pw);
-    show(input, "info", "Проверяю пароль…");
+    await loadLang();
+    show(input, "info", t("checking"));
 
     const response = await chrome.runtime.sendMessage({
       type: "check",
@@ -43,7 +44,7 @@
 
     if (input.value !== pw) return; // пароль успели поменять
     if (!response || !response.ok) {
-      show(input, "info", "Не получилось проверить (нет интернета?)");
+      show(input, "info", t("offline"));
       return;
     }
 
@@ -51,19 +52,19 @@
     let level = "ok";
     if (response.leaks > 0) {
       level = "bad";
-      lines.push(`<b>Этот пароль найден в утечках ${response.leaks.toLocaleString("ru-RU")} раз.</b> Хакеры пробуют такие пароли первыми, поменяй его.`);
+      lines.push(t("leak", response.leaks));
     }
     if (response.otherSites.length > 0) {
       if (level === "ok") level = "warn";
-      lines.push(`Такой же пароль уже стоит на: <b>${response.otherSites.slice(0, 3).join(", ")}</b>. Если взломают один сайт, взломают и остальные.`);
+      lines.push(t("reuse", response.otherSites.slice(0, 3).join(", ")));
     }
     // checkStrength живёт в strength.js
     const tips = checkStrength(pw);
     if (tips.length > 0) {
       if (level === "ok") level = "warn";
-      lines.push("Как усилить пароль:<br>• " + tips.join("<br>• "));
+      lines.push(t("howTo") + "<br>• " + tips.join("<br>• "));
     }
-    if (lines.length === 0) lines.push("В утечках не найден, на других сайтах не повторяется. Отлично!");
+    if (lines.length === 0) lines.push(t("allGood"));
     show(input, level, lines.join("<br>"));
   }
 

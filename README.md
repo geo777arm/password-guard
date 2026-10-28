@@ -9,6 +9,7 @@ A browser extension that warns you, while you type, if your password has appeare
 - **Reuse warning.** Notices when the same password is used on several sites.
 - **Strength tips.** Explains what makes a password weak: length, missing character types, common passwords, keyboard runs, repeated characters, years.
 - **Generator.** Creates a strong random password with `crypto.getRandomValues`.
+- **English and Russian.** Switch the language with the RU / EN toggle in the popup; warnings on websites follow it instantly.
 
 ## How the breach check stays private
 1. The extension computes the SHA-1 hash of the password locally.
@@ -18,6 +19,8 @@ A browser extension that warns you, while you type, if your password has appeare
 For reuse detection, the extension stores a salted SHA-256 fingerprint per site in local extension storage. Plain passwords are never stored. See [PRIVACY.md](PRIVACY.md).
 
 ![Leak warning](docs/2-leak.png)
+
+![RU and EN interface](docs/popup-ru-en.png)
 
 ## Install
 Works in Chrome, Edge, Brave and other Chromium browsers.
@@ -33,11 +36,12 @@ Works in Chrome, Edge, Brave and other Chromium browsers.
 | `extension/background.js` | Breach lookup (k-anonymity) and salted reuse fingerprints |
 | `extension/strength.js` | Password strength rules |
 | `extension/generator.js` | Secure password generator |
-| `extension/popup.*` | Toolbar popup with stats and the generator |
+| `extension/popup.*` | Toolbar popup with stats, the generator and the language toggle |
+| `extension/i18n.js` | English and Russian interface texts |
 | `extension/tests.html` | Open in a browser to run the unit tests (15 checks) |
 
 ## Tech
-JavaScript, Chrome Extensions Manifest V3, Web Crypto API, Have I Been Pwned range API.
+JavaScript, Chrome Extensions Manifest V3 (with `_locales` for English and Russian), Web Crypto API, Have I Been Pwned range API.
 
 ## Why I built it
 Most people I know use one or two passwords for everything, and almost nobody checks whether those passwords have already leaked. I wanted a tool that catches this at the exact moment it matters: when you are typing the password. The hardest part was making it private. A password checker that sends your password somewhere is itself a risk, so I used the k-anonymity range API and salted fingerprints, so the extension can warn you without ever knowing or storing your actual passwords.

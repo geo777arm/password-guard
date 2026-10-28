@@ -1,0 +1,4 @@
+{
+  "appName": { "message": "Password Guard: leaked password checker" },
+  "appDesc": { "message": "Warns you if a password appeared in a data breach or is reused on other sites. Passwords never leave your device." }
+}
