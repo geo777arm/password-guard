@@ -94,11 +94,16 @@
     }
     if (lines.length === 0) lines.push(t("allGood"));
     // Напоминаем про двухфакторку, пока человек не отметит её в окошке (twofa.js)
+    // Где можно входить по passkey (Face ID / отпечаток), советуем его: он надёжнее даже двухфакторки.
     const twofa = twofaFor(location.hostname);
-    if (twofa && !fakeSite) {
-      const { twofaDone = [] } = await chrome.storage.local.get("twofaDone");
-      if (!twofaDone.includes(twofa.site)) lines.push(t("twofaHint", twofa.site));
+    const passkey = passkeyFor(location.hostname);
+    if ((twofa || passkey) && !fakeSite) {
+      const { twofaDone = [], passkeyDone = [] } = await chrome.storage.local.get(["twofaDone", "passkeyDone"]);
+      if (passkey && !passkeyDone.includes(passkey.site) && !twofaDone.includes(passkey.site)) lines.push(t("passkeyHint", passkey.site));
+      else if (twofa && !twofaDone.includes(twofa.site)) lines.push(t("twofaHint", twofa.site));
     }
+    // Показываем, что именно ушло в интернет: только 5 символов хэша, не пароль.
+    lines.push(`<span class="pg-proof">${t("sentShort", response.sent)}</span>`);
     show(input, level, lines.join("<br>"));
   }
 

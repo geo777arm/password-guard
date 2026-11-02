@@ -10,6 +10,7 @@ async function renderStats() {
 async function renderTwofa() {
   const { fingerprints = {}, twofaDone = [] } = await chrome.storage.local.get(["fingerprints", "twofaDone"]);
   const sites = [...new Map(Object.keys(fingerprints).map(twofaFor).filter(Boolean).map(x => [x.site, x])).values()];
+  const { passkeyDone = [] } = await chrome.storage.local.get("passkeyDone");
   const list = document.getElementById("twofa-list");
   list.replaceChildren();
   for (const { site, url } of sites) {
@@ -31,12 +32,40 @@ async function renderTwofa() {
       await chrome.storage.local.set({ twofaDone: next });
       renderTwofa();
     });
-    li.append(name, link, mark);
+    const links = document.createElement("div");
+    links.className = "links";
+    links.append(link);
+    // если сайт поддерживает passkey, даём ссылку и на него
+    const passkey = passkeyFor(site);
+    if (passkey && !done) {
+      const pk = document.createElement("a");
+      pk.href = passkey.url; pk.target = "_blank"; pk.rel = "noopener";
+      pk.textContent = t("passkeyOpen") + " →";
+      pk.addEventListener("click", async () => {
+        if (!passkeyDone.includes(passkey.site)) await chrome.storage.local.set({ passkeyDone: [...passkeyDone, passkey.site] });
+      });
+      links.append(pk);
+    }
+    li.append(name, links, mark);
     list.append(li);
   }
   document.getElementById("twofa-empty").hidden = sites.length > 0;
   const doneCount = sites.filter(x => twofaDone.includes(x.site)).length;
   document.getElementById("twofa-count").textContent = sites.length ? t("twofaLeft", doneCount, sites.length) : "";
+}
+
+// Журнал: что расширение отправляло в интернет (вкладка «Защита»).
+async function renderSentLog() {
+  const { sentLog = [] } = await chrome.storage.local.get("sentLog");
+  const list = document.getElementById("sent-log");
+  list.replaceChildren();
+  for (const { prefix, time } of sentLog) {
+    const li = document.createElement("li");
+    const when = new Date(time).toLocaleTimeString(LANG === "ru" ? "ru-RU" : "en-US", { hour: "2-digit", minute: "2-digit" });
+    li.textContent = `${when}  →  api.pwnedpasswords.com/range/${prefix}`;
+    list.append(li);
+  }
+  document.getElementById("sent-log-empty").hidden = sentLog.length > 0;
 }
 
 // Подставляем тексты на выбранном языке во все элементы с data-i18n.
@@ -50,6 +79,7 @@ function renderTexts() {
   renderLength();
   renderTwofa();
   renderTrace();
+  renderSentLog();
 }
 
 // Вкладка «След»: шаги, чтобы проверить и убрать свои данные из сети (footprint.js).
@@ -158,6 +188,7 @@ document.getElementById("reset").addEventListener("click", async () => {
   renderStats();
   renderTwofa();
   renderTrace();
+  renderSentLog();
 });
 
 // Ручная проверка пароля: хэш считается здесь, в базу уходят только первые 5 символов.
@@ -201,8 +232,10 @@ document.getElementById("check-form").addEventListener("submit", async event => 
   } else if (level !== "bad") {
     lines.push(t("checkStrong"));
   }
+  if (response && response.ok) lines.push(`<span class="proof">${t("sentProof", response.sent)}</span>`);
   checkResult.dataset.level = level;
   checkResult.innerHTML = lines.join("<br>");
+  renderSentLog();
 });
 
 // Если поменяли пароль после проверки, старый результат больше не про него.

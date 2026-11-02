@@ -44,6 +44,13 @@ async function checkReuse(password, site, save = true) {
   return otherSites;
 }
 
+// Журнал отправок: что именно ушло в интернет (только префиксы хэша), последние 5 штук.
+async function logSent(prefix) {
+  const { sentLog = [] } = await chrome.storage.local.get("sentLog");
+  sentLog.unshift({ prefix, time: Date.now() });
+  await chrome.storage.local.set({ sentLog: sentLog.slice(0, 5) });
+}
+
 async function bumpStats(leaked, reused) {
   const { stats = { checked: 0, leaked: 0, reused: 0 } } = await chrome.storage.local.get("stats");
   stats.checked++;
@@ -56,7 +63,7 @@ chrome.runtime.onMessage.addListener((msg, _sender, sendResponse) => {
   // Ручная проверка из окошка: только база утечек, без отпечатков и статистики.
   if (msg.type === "leaks") {
     countLeaks(msg.sha1)
-      .then(leaks => sendResponse({ ok: true, leaks }))
+      .then(async leaks => { await logSent(msg.sha1.slice(0, 5)); sendResponse({ ok: true, leaks, sent: msg.sha1.slice(0, 5) }); })
       .catch(e => sendResponse({ ok: false, error: String(e) }));
     return true;
   }
@@ -68,7 +75,8 @@ chrome.runtime.onMessage.addListener((msg, _sender, sendResponse) => {
         checkReuse(msg.password, msg.site, !msg.suspicious)
       ]);
       await bumpStats(leaks > 0, otherSites.length > 0);
-      sendResponse({ ok: true, leaks, otherSites });
+      await logSent(msg.sha1.slice(0, 5));
+      sendResponse({ ok: true, leaks, otherSites, sent: msg.sha1.slice(0, 5) });
     } catch (e) {
       sendResponse({ ok: false, error: String(e) });
     }

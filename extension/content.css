@@ -17,3 +17,4 @@
 .pg-badge[data-level="warn"] { --pg-dot: #E9CB82; }
 .pg-badge[data-level="bad"]  { --pg-dot: #F2938C; }
 @media (prefers-reduced-motion: reduce) { .pg-badge { transition: none; } }
+.pg-badge .pg-proof { display: inline-block; margin-top: 4px; font: 10.5px/1.4 ui-monospace, "SF Mono", Menlo, monospace; color: #8E8E96; }

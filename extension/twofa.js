@@ -33,3 +33,20 @@ function twofaFor(host) {
   const site = Object.keys(TWOFA).find(d => host === d || host.endsWith("." + d));
   return site ? { site, url: TWOFA[site] } : null;
 }
+
+// Сайты, где можно входить по passkey: без пароля, по Face ID, Touch ID или PIN.
+// Passkey нельзя украсть фишингом: он работает только на настоящем сайте.
+const PASSKEY = {
+  "google.com": "https://myaccount.google.com/signinoptions/passkeys",
+  "youtube.com": "https://myaccount.google.com/signinoptions/passkeys",
+  "github.com": "https://github.com/settings/security",
+  "microsoft.com": "https://account.microsoft.com/security",
+  "live.com": "https://account.microsoft.com/security",
+  "paypal.com": "https://www.paypal.com/myaccount/security",
+};
+
+function passkeyFor(host) {
+  host = host.toLowerCase();
+  const site = Object.keys(PASSKEY).find(d => host === d || host.endsWith("." + d));
+  return site ? { site, url: PASSKEY[site] } : null;
+}
