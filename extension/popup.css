@@ -38,8 +38,14 @@ h1 { font-size: 22px; font-weight: 700; letter-spacing: -.02em; line-height: 1; 
 .big { display: flex; align-items: flex-end; gap: 6px; font-size: 80px; font-weight: 500; letter-spacing: -.045em; line-height: .9; margin: 14px 0 10px; font-variant-numeric: tabular-nums; }
 .sq { width: 12px; height: 12px; background: var(--accent); margin-bottom: 7px; flex: none; }
 .hero-meta { display: flex; justify-content: space-between; gap: 8px; color: var(--fg-muted); white-space: nowrap; }
-.hero-meta b { color: var(--fg); font-weight: 600; }
-.hero-meta b.bad { color: var(--danger); }
+.big .of { font-size: 12px; font-weight: 500; color: var(--fg-dim); letter-spacing: .1em; margin: 0 0 7px 4px; }
+.stats-row { display: flex; justify-content: space-between; margin-top: 12px; color: var(--fg-muted); font-size: 10px; white-space: nowrap; }
+.stats-row b { color: var(--fg); font-weight: 600; }
+.stats-row b.bad { color: var(--danger); }
+.next-step { margin-top: 14px; display: flex; flex-direction: column; align-items: flex-start; gap: 5px; text-align: left; border: var(--bw) solid var(--border); background: var(--bg); border-radius: var(--r-sm); padding: 10px 12px; transition: border-color var(--ease); }
+.next-step:hover { border-color: var(--accent); }
+.next-step .mono { color: var(--accent-text); font-size: 9.5px; }
+#next-text { font-size: 13px; color: var(--fg); }
 .track { position: relative; height: 1px; background: var(--border-strong); margin-top: 12px;
   background-image: repeating-linear-gradient(90deg, transparent 0 calc(25% - 1px), var(--fg-dim) calc(25% - 1px) 25%); }
 .track span { position: absolute; left: 0; top: -.5px; height: 2px; background: var(--fg); width: 0; transition: width 400ms ease; }

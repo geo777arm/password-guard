@@ -22,6 +22,7 @@
 <script src="words.js"></script>
 <script src="generator.js"></script>
 <script src="sitecheck.js"></script>
+<script src="score.js"></script>
 <script>
 const out = document.getElementById("out");
 let passed = 0, total = 0;
@@ -86,6 +87,22 @@ test("страница http — опасно", () => fkeys("http://shop.com/logi
 test("форма шлёт пароль по http — опасно", () => fkeys("https://shop.com/login", "http://shop.com/auth") === "formActionHttp");
 test("форма шлёт пароль на чужой сайт", () => fkeys("https://shop.com/login", "https://evil.ru/steal") === "formOther");
 test("обычная форма https — всё хорошо", () => fkeys("https://www.shop.com/login", "/auth") === "");
+
+section("checkLink — проверка ссылок");
+const lkeys = u => checkLink(u).map(w => w.key).join(",");
+test("<code>https://github.com/geo777arm</code> — без замечаний", () => lkeys("https://github.com/geo777arm") === "");
+test("<code>https://google.com@evil.ru/login</code> — обман с @", () => lkeys("https://google.com@evil.ru/login").startsWith("linkAt"));
+test("<code>https://bit.ly/3abc</code> — сокращённая ссылка", () => lkeys("https://bit.ly/3abc") === "linkShort");
+test("<code>http://paypa1.com</code> — подделка и без https", () => lkeys("http://paypa1.com") === "siteFake,linkHttp");
+test("<code>https://free-gift.xyz</code> — подозрительный домен", () => lkeys("https://free-gift.xyz") === "linkTld");
+test("<code>javascript:alert(1)</code> — код вместо ссылки", () => lkeys("javascript:alert(1)") === "linkScript");
+
+section("securityScore — балл защиты");
+const S = (o) => securityScore(Object.assign({ stats: { checked: 0, leaked: 0, reused: 0 }, twofaSites: [], twofaDone: [], traceIds: ["a", "b"], traceDone: [] }, o));
+test("новичок: 35 баллов и совет проверить пароль", () => { const r = S({}); return r.score === 35 && r.next.key === "nextCheck"; });
+test("всё сделано: 100 баллов", () => S({ stats: { checked: 5, leaked: 0, reused: 0 }, twofaSites: ["google.com"], twofaDone: ["google.com"], traceDone: ["a", "b"] }).score === 100);
+test("утечки снижают балл", () => S({ stats: { checked: 4, leaked: 2, reused: 0 } }).score < S({ stats: { checked: 4, leaked: 0, reused: 0 } }).score);
+test("советует включить 2FA, если это даёт больше всего", () => { const r = S({ stats: { checked: 5, leaked: 0, reused: 0 }, twofaSites: ["google.com"], traceDone: ["a", "b"] }); return r.next.key === "nextTwofa" && r.next.args[0] === "google.com"; });
 
 out.insertAdjacentHTML("beforeend", `<p class="score">Пройдено: ${passed} из ${total}</p>`);
 </script>

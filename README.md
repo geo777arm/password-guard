@@ -8,6 +8,8 @@ A browser extension that warns you, while you type, if your password has appeare
 - **Breach check.** Looks the password up in [Have I Been Pwned](https://haveibeenpwned.com/Passwords) (900M+ leaked passwords) without ever sending it.
 - **Fake site warning.** Before you type, it checks the address for lookalikes of popular services: typos (`gtihub.com`), swapped characters (`g00gle.com`, `paypa1.com`, `rnicrosoft.com`), brand names hidden in subdomains (`paypal.com.secure-login.xyz`), letters from other alphabets (punycode) and raw IP addresses. If you type your real password for a site into its fake copy, it tells you to stop and change it.
 - **Unsafe form warning.** Warns when a page has no encryption (http), when a form would send the password unencrypted, or when it would send it to a different site.
+- **Security score.** The big number in the popup is your score from 0 to 100 (passwords, two-factor login, digital footprint), with the one next step that raises it most.
+- **Right-click link check.** Right-click any link → *Check this link*: it shows where the link really goes and flags tricks like `google.com@evil.xyz`, lookalike domains, URL shorteners, cheap scam domains and http.
 - **See exactly what was sent.** After every check the extension shows the only thing that went online, e.g. `5BAA6` (5 of the 40 hash characters), and the Privacy tab keeps a log of the latest requests.
 - **Passkey tips.** On sites that support passkeys (Google, GitHub, Microsoft, PayPal) it suggests signing in with Face ID or a fingerprint instead of a password, since passkeys can't be phished.
 - **Two-factor reminder.** On sites like Google, Instagram, Steam or GitHub it reminds you to turn on two-factor login. The 2FA tab lists the sites you use with a direct link to the right settings page, and you can tick them off.
@@ -42,7 +44,7 @@ For reuse detection, the extension stores a salted SHA-256 fingerprint per site 
 A password extension *should* be met with suspicion, so here is how to check this one yourself instead of taking my word for it:
 
 - **It uses the official Have I Been Pwned API**, the same [Pwned Passwords range API](https://haveibeenpwned.com/API/v3#PwnedPasswords) that password managers like 1Password use. Your password and its full hash never leave your device.
-- **It can only talk to one server.** Look at [`manifest.json`](extension/manifest.json): the only network permission is `https://api.pwnedpasswords.com/*`, plus `storage`. Chrome blocks every other request, so it physically can't send your passwords anywhere else.
+- **It can only talk to one server.** Look at [`manifest.json`](extension/manifest.json): the only network permission is `https://api.pwnedpasswords.com/*`, plus `storage` and `contextMenus` (for the right-click link check). Chrome blocks every other request, so it physically can't send your passwords anywhere else.
 - **No remote code, no analytics, no account.** All code is in this repo, under 900 lines of plain JavaScript (most of it is a word list).
 - **Verify the traffic.** Open `chrome://extensions` → Password Guard → *Inspect views: service worker* → *Network*, type a password on any site, and you will see a single request like `range/5BAA6` with 5 characters of a hash.
 - **Never install extensions from links in messages.** Get it from this GitHub page only.

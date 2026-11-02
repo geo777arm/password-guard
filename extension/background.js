@@ -83,3 +83,22 @@ chrome.runtime.onMessage.addListener((msg, _sender, sendResponse) => {
   })();
   return true;
 });
+
+// Пункт «Проверить ссылку» в меню правого клика. Сама проверка идёт на странице (sitecheck.js).
+const MENU_TITLE = { ru: "Проверить ссылку (Password Guard)", en: "Check this link (Password Guard)" };
+
+async function setupMenu() {
+  const { lang } = await chrome.storage.local.get("lang");
+  const l = lang || (navigator.language.startsWith("ru") ? "ru" : "en");
+  chrome.contextMenus.removeAll(() => {
+    chrome.contextMenus.create({ id: "check-link", title: MENU_TITLE[l], contexts: ["link"] });
+  });
+}
+chrome.runtime.onInstalled.addListener(setupMenu);
+chrome.runtime.onStartup.addListener(setupMenu);
+chrome.storage.onChanged.addListener(changes => { if (changes.lang) setupMenu(); });
+
+chrome.contextMenus.onClicked.addListener((info, tab) => {
+  if (info.menuItemId !== "check-link" || !tab) return;
+  chrome.tabs.sendMessage(tab.id, { type: "checkLink", url: info.linkUrl }, { frameId: 0 }).catch(() => {});
+});

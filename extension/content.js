@@ -124,4 +124,31 @@
     const el = e.target;
     if (el instanceof HTMLInputElement && el.type === "password") check(el);
   }, true);
+
+  // Проверка ссылки по правому клику: показываем карточку в углу страницы.
+  if (window === window.top) {
+    chrome.runtime.onMessage.addListener(async msg => {
+      if (msg.type !== "checkLink") return;
+      await loadLang();
+      let host = msg.url;
+      try { host = new URL(msg.url).hostname || msg.url; } catch {}
+      const warnings = checkLink(msg.url).map(w => ({ level: w.level, text: t(w.key, ...w.args.map(escape)) }));
+      const level = warnings.length ? worst(warnings.map(w => w.level)) : "ok";
+      const lines = [t("linkTitle", escape(host)), ...(warnings.length ? warnings.map(w => w.text) : [t("linkClean")])];
+
+      document.querySelector(".pg-toast")?.remove();
+      const toast = document.createElement("div");
+      toast.className = "pg-badge pg-toast";
+      toast.dataset.level = level;
+      toast.innerHTML = lines.join("<br>");
+      const close = document.createElement("button");
+      close.className = "pg-close";
+      close.textContent = "×";
+      close.setAttribute("aria-label", t("close"));
+      close.addEventListener("click", () => toast.remove());
+      toast.append(close);
+      document.body.appendChild(toast);
+      setTimeout(() => toast.remove(), 15000);
+    });
+  }
 })();

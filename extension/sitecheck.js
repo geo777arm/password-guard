@@ -134,3 +134,25 @@ function checkForm(pageUrl, actionUrl) {
   }
   return warnings;
 }
+
+// Проверка ссылки по правому клику: куда она на самом деле ведёт и есть ли признаки обмана.
+const SHORTENERS = ["bit.ly", "tinyurl.com", "t.co", "goo.gl", "cutt.ly", "clck.ru", "is.gd", "ow.ly", "rb.gy", "shorturl.at", "goo.su", "vk.cc", "t.ly", "tiny.cc"];
+const RISKY_TLDS = ["zip", "mov", "xyz", "top", "click", "country", "gq", "tk", "ml", "cf", "ga", "work", "rest", "cam"];
+
+function checkLink(raw) {
+  let url;
+  try { url = new URL(raw); } catch { return [{ level: "warn", key: "linkBroken", args: [] }]; }
+  if (url.protocol === "javascript:" || url.protocol === "data:") return [{ level: "bad", key: "linkScript", args: [] }];
+  if (!/^https?:$/.test(url.protocol)) return [];
+  const host = url.hostname;
+  const warnings = [];
+  // https://google.com@evil.com на самом деле ведёт на evil.com
+  if (url.username || url.password) warnings.push({ level: "bad", key: "linkAt", args: [host] });
+  warnings.push(...checkSite(host));
+  if (url.protocol === "http:") warnings.push({ level: "warn", key: "linkHttp", args: [] });
+  if (SHORTENERS.includes(baseDomain(host))) warnings.push({ level: "warn", key: "linkShort", args: [] });
+  const tld = host.split(".").pop();
+  if (RISKY_TLDS.includes(tld)) warnings.push({ level: "warn", key: "linkTld", args: ["." + tld] });
+  if (host.split(".").length > 5) warnings.push({ level: "warn", key: "linkDeep", args: [] });
+  return warnings;
+}

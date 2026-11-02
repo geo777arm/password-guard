@@ -1,9 +1,20 @@
 async function renderStats() {
-  const { stats = { checked: 0, leaked: 0, reused: 0 } } = await chrome.storage.local.get("stats");
+  const data = await chrome.storage.local.get(["stats", "fingerprints", "twofaDone", "traceDone"]);
+  const stats = data.stats || { checked: 0, leaked: 0, reused: 0 };
   for (const key of ["checked", "leaked", "reused"]) document.getElementById(key).textContent = stats[key];
-  // полоска: какая доля проверенных паролей не нашлась в утечках
-  const safe = stats.checked ? (stats.checked - stats.leaked) / stats.checked * 100 : 0;
-  document.getElementById("track-fill").style.width = safe + "%";
+  const twofaSites = [...new Set(Object.keys(data.fingerprints || {}).map(twofaFor).filter(Boolean).map(x => x.site))];
+  const { score, next } = securityScore({
+    stats, twofaSites, twofaDone: data.twofaDone || [],
+    traceIds: FOOTPRINT.map(x => x.id), traceDone: data.traceDone || [],
+  });
+  document.getElementById("score").textContent = score;
+  document.getElementById("track-fill").style.width = score + "%";
+  // следующий шаг: кнопка ведёт на нужную вкладку
+  const btn = document.getElementById("next-step");
+  document.getElementById("next-text").textContent = next
+    ? t(next.key, ...next.args) + (next.gain ? `  +${next.gain}` : "")
+    : t("nextDone");
+  btn.dataset.tab = next && next.tab ? next.tab : "check";
 }
 
 // Вкладка 2FA: сайты, где человек вводил пароль и где можно включить вход по коду.
@@ -31,6 +42,7 @@ async function renderTwofa() {
       const next = done ? twofaDone.filter(s => s !== site) : [...twofaDone, site];
       await chrome.storage.local.set({ twofaDone: next });
       renderTwofa();
+      renderStats();
     });
     const links = document.createElement("div");
     links.className = "links";
@@ -113,6 +125,7 @@ async function renderTrace() {
       const next = done ? traceDone.filter(x => x !== id) : [...traceDone, id];
       await chrome.storage.local.set({ traceDone: next });
       renderTrace();
+      renderStats();
     });
     li.append(mark);
     list.append(li);
@@ -127,6 +140,7 @@ for (const btn of document.querySelectorAll("[data-lang]")) {
     await chrome.storage.local.set({ lang: LANG });
     if (mode === "words") output.value = "";
     renderTexts();
+    renderStats();
   });
 }
 
@@ -243,7 +257,7 @@ checkInput.addEventListener("input", () => { checkResult.hidden = true; });
 
 // Вкладки: на экране всегда один раздел, чтобы окошко не было перегружено.
 function showTab(name) {
-  for (const btn of document.querySelectorAll("[data-tab]")) {
+  for (const btn of document.querySelectorAll("[role=tab]")) {
     const active = btn.dataset.tab === name;
     btn.classList.toggle("active", active);
     btn.setAttribute("aria-selected", active);
@@ -251,7 +265,8 @@ function showTab(name) {
   for (const panel of document.querySelectorAll("[data-panel]")) panel.hidden = panel.dataset.panel !== name;
   try { localStorage.setItem("pg-tab", name); } catch {}
 }
-for (const btn of document.querySelectorAll("[data-tab]")) btn.addEventListener("click", () => showTab(btn.dataset.tab));
+for (const btn of document.querySelectorAll("[role=tab]")) btn.addEventListener("click", () => showTab(btn.dataset.tab));
+document.getElementById("next-step").addEventListener("click", e => showTab(e.currentTarget.dataset.tab));
 let savedTab = "check";
 try { savedTab = localStorage.getItem("pg-tab") || "check"; } catch {}
 showTab(["check", "generate", "twofa", "trace", "about"].includes(savedTab) ? savedTab : "check");

@@ -17,9 +17,15 @@
     <div class="hero-top">
       <span class="pill" data-i18n="subtitle"></span>
     </div>
-    <div class="big"><span id="checked">0</span><i class="sq"></i></div>
-    <div class="hero-meta mono"><span data-i18n="checked"></span><span><span data-i18n="leaked"></span> <b id="leaked" class="bad">0</b> · <span data-i18n="reused"></span> <b id="reused">0</b></span></div>
+    <div class="big"><span id="score">0</span><i class="sq"></i><span class="of mono">/100</span></div>
+    <div class="hero-meta mono"><span data-i18n="scoreLabel"></span></div>
     <div class="track" aria-hidden="true"><span id="track-fill"></span></div>
+    <div class="stats-row mono">
+      <span><span data-i18n="statChecked"></span> <b id="checked">0</b></span>
+      <span><span data-i18n="statLeaked"></span> <b id="leaked" class="bad">0</b></span>
+      <span><span data-i18n="statReused"></span> <b id="reused">0</b></span>
+    </div>
+    <button id="next-step" class="next-step"><span class="mono" data-i18n="nextLabel"></span><span id="next-text"></span></button>
   </section>
 
   <nav class="tabs mono" role="tablist">
@@ -96,6 +102,7 @@
   <script src="generator.js"></script>
   <script src="twofa.js"></script>
   <script src="footprint.js"></script>
+  <script src="score.js"></script>
   <script src="popup.js"></script>
 </body>
 </html>
