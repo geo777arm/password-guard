@@ -8,6 +8,8 @@ A browser extension that warns you, while you type, if your password has appeare
 - **Breach check.** Looks the password up in [Have I Been Pwned](https://haveibeenpwned.com/Passwords) (900M+ leaked passwords) without ever sending it.
 - **Fake site warning.** Before you type, it checks the address for lookalikes of popular services: typos (`gtihub.com`), swapped characters (`g00gle.com`, `paypa1.com`, `rnicrosoft.com`), brand names hidden in subdomains (`paypal.com.secure-login.xyz`), letters from other alphabets (punycode) and raw IP addresses. If you type your real password for a site into its fake copy, it tells you to stop and change it.
 - **Unsafe form warning.** Warns when a page has no encryption (http), when a form would send the password unencrypted, or when it would send it to a different site.
+- **"Paste this command" (ClickFix) protection.** Fake "I'm not a robot" pages secretly copy a malicious PowerShell/Terminal command and tell you to press Win+R and paste it. Password Guard notices when a page puts a command on your clipboard and warns you before you paste. (A tiny script, `clipguard.js`, watches clipboard writes in the page; it never blocks or sends anything.)
+- **Scam bait for teens.** Pages promising free Robux, skins, V-Bucks or Nitro with a login form get flagged when you click the password field.
 - **Security score.** The big number in the popup is your score from 0 to 100 (passwords, two-factor login, digital footprint), with the one next step that raises it most.
 - **Right-click link check.** Right-click any link → *Check this link*: it shows where the link really goes and flags tricks like `google.com@evil.xyz`, lookalike domains, URL shorteners, cheap scam domains and http.
 - **See exactly what was sent.** After every check the extension shows the only thing that went online, e.g. `5BAA6` (5 of the 40 hash characters), and the Privacy tab keeps a log of the latest requests.
@@ -24,6 +26,8 @@ A browser extension that warns you, while you type, if your password has appeare
 ![Fake site, http page and foreign form warnings](docs/site-protection.png)
 
 ![Digital footprint checklist](docs/footprint.png)
+
+![ClickFix and free Robux scam warnings](docs/clickfix-bait.png)
 
 ## How the breach check stays private
 1. The extension computes the SHA-1 hash of the password locally.

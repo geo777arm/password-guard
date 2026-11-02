@@ -34,7 +34,8 @@
   // Поддельный сайт или форма без шифрования (sitecheck.js)
   function pageWarnings(input) {
     const action = input.form ? input.form.getAttribute("action") : null;
-    return [...checkSite(location.hostname), ...checkForm(location.href, action)]
+    const bait = checkBait(location.hostname, (document.body.innerText || "").slice(0, 50000));
+    return [...checkSite(location.hostname), ...checkForm(location.href, action), ...(bait ? [bait] : [])]
       .map(w => ({ level: w.level, text: t(w.key, ...w.args.map(escape)) }));
   }
 
@@ -125,6 +126,33 @@
     if (el instanceof HTMLInputElement && el.type === "password") check(el);
   }, true);
 
+  // Карточка в правом верхнем углу страницы (для ссылок и буфера обмена).
+  function showToast(level, html) {
+    document.querySelector(".pg-toast")?.remove();
+    const toast = document.createElement("div");
+    toast.className = "pg-badge pg-toast";
+    toast.dataset.level = level;
+    toast.innerHTML = html;
+    const close = document.createElement("button");
+    close.className = "pg-close";
+    close.textContent = "×";
+    close.setAttribute("aria-label", t("close"));
+    close.addEventListener("click", () => toast.remove());
+    toast.append(close);
+    document.body.appendChild(toast);
+    setTimeout(() => toast.remove(), level === "bad" ? 60000 : 15000);
+  }
+
+  // Сайт положил в буфер команду для терминала (сообщение от clipguard.js)
+  window.addEventListener("pg-clipboard", async e => {
+    const text = String(e.detail || "");
+    const level = checkClipboard(text, (document.body.innerText || "").slice(0, 50000));
+    if (!level || window !== window.top && level !== "bad") return;
+    await loadLang();
+    const preview = escape(text.length > 120 ? text.slice(0, 120) + "…" : text);
+    showToast(level, t(level === "bad" ? "clipBad" : "clipWarn", preview));
+  });
+
   // Проверка ссылки по правому клику: показываем карточку в углу страницы.
   if (window === window.top) {
     chrome.runtime.onMessage.addListener(async msg => {
@@ -136,19 +164,7 @@
       const level = warnings.length ? worst(warnings.map(w => w.level)) : "ok";
       const lines = [t("linkTitle", escape(host)), ...(warnings.length ? warnings.map(w => w.text) : [t("linkClean")])];
 
-      document.querySelector(".pg-toast")?.remove();
-      const toast = document.createElement("div");
-      toast.className = "pg-badge pg-toast";
-      toast.dataset.level = level;
-      toast.innerHTML = lines.join("<br>");
-      const close = document.createElement("button");
-      close.className = "pg-close";
-      close.textContent = "×";
-      close.setAttribute("aria-label", t("close"));
-      close.addEventListener("click", () => toast.remove());
-      toast.append(close);
-      document.body.appendChild(toast);
-      setTimeout(() => toast.remove(), 15000);
+      showToast(level, lines.join("<br>"));
     });
   }
 })();

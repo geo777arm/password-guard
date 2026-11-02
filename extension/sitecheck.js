@@ -156,3 +156,39 @@ function checkLink(raw) {
   if (host.split(".").length > 5) warnings.push({ level: "warn", key: "linkDeep", args: [] });
   return warnings;
 }
+
+// Команда для терминала или окна «Выполнить» (Win+R): так выглядят вредные команды ClickFix.
+const COMMAND_PATTERNS = [
+  /\bpowershell\b/i, /\bpwsh\b/i, /\bmshta\b/i, /\bcmd(\.exe)?\s+\/[ck]\b/i, /\bInvoke-(Expression|WebRequest|RestMethod)\b/i,
+  /\biex\b/i, /\biwr\b/i, /\bcertutil\b/i, /\bbitsadmin\b/i, /\brundll32\b/i, /\bregsvr32\b/i, /\bmsiexec\b/i,
+  /\bosascript\s+-e\b/i, /\b(curl|wget)\b[^\n|]*\|\s*(ba|z)?sh\b/i, /base64\s+(-d|--decode)[^\n]*\|\s*(ba|z)?sh/i,
+  /-(w|windowstyle)\s+hidden/i, /-e(nc|ncodedcommand)?\s+[A-Za-z0-9+/=]{20,}/i,
+];
+// Приманки «вы не робот»: в самой команде (часто прячут комментарий «I am not a robot») и на странице.
+const LURE_IN_COMMAND = /robot|captcha|verif|не робот|подтвер/i;
+const LURE_ON_PAGE = /not a robot|i'?m not a robot|captcha|не робот|win\s*\+\s*r|windows\s*\+\s*r|⊞\s*\+?\s*r/i;
+
+// Возвращает null, warn (просто команда, например с сайта с инструкциями) или bad (команда + уговоры «вставьте»).
+function checkClipboard(text, pageText = "") {
+  if (!COMMAND_PATTERNS.some(re => re.test(text))) return null;
+  return LURE_IN_COMMAND.test(text) || LURE_ON_PAGE.test(pageText) ? "bad" : "warn";
+}
+
+// Развод для школьников: «бесплатные робуксы, скины, Nitro» на странице с формой входа.
+const BAIT = [
+  /бесплатн\S*\s+(робукс|robux|скин|в-?бакс|v-?bucks|nitro|нитро|гем|алмаз)/i,
+  /(робукс|robux|скин\S*|в-?бакс\S*|v-?bucks|nitro|нитро)\s+бесплатно/i,
+  /free\s+(robux|skins?|v-?bucks|nitro|gems|diamonds)/i,
+  /(раздач|розыгрыш)\S*\s+(скин|робукс|robux|nitro)/i,
+  /(robux|skins?|nitro)\s+(giveaway|generator)/i, /генератор\s+(робукс|robux|скин)/i,
+  /(вы\s+выиграли|you\s+(have\s+)?won)/i,
+];
+
+function checkBait(host, text) {
+  if (Object.values(BRANDS).some(list => isOfficial(host, list))) return null;
+  const hit = BAIT.map(re => text.match(re)).find(Boolean);
+  if (!hit) return null;
+  // дописываем слово до конца: «бесплатные робукс» → «бесплатные робуксы»
+  const tail = text.slice(hit.index + hit[0].length).match(/^[\p{L}-]*/u)[0];
+  return { level: "bad", key: "siteBait", args: [(hit[0] + tail).trim().slice(0, 40)] };
+}
