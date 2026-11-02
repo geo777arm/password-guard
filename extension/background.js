@@ -89,12 +89,20 @@ const MENU_TITLE = { ru: "Проверить ссылку (Password Guard)", en:
 
 async function setupMenu() {
   const { lang } = await chrome.storage.local.get("lang");
-  const l = lang || (navigator.language.startsWith("ru") ? "ru" : "en");
+  // «Авто» или пусто — по языку устройства, как в i18n.js
+  const first = (navigator.languages || [navigator.language]).map(x => x.toLowerCase().split("-")[0]).find(c => ["ru", "be", "kk", "ky", "en"].includes(c));
+  const l = lang === "ru" || lang === "en" ? lang : (first && first !== "en" ? "ru" : "en");
   chrome.contextMenus.removeAll(() => {
     chrome.contextMenus.create({ id: "check-link", title: MENU_TITLE[l], contexts: ["link"] });
   });
 }
-chrome.runtime.onInstalled.addListener(setupMenu);
+chrome.runtime.onInstalled.addListener(async details => {
+  // С версии 1.12 язык по умолчанию берётся с устройства: старый ручной выбор сбрасываем один раз.
+  if (details.reason === "update" && details.previousVersion && details.previousVersion.localeCompare("1.12.0", undefined, { numeric: true }) < 0) {
+    await chrome.storage.local.set({ lang: "auto" });
+  }
+  setupMenu();
+});
 chrome.runtime.onStartup.addListener(setupMenu);
 chrome.storage.onChanged.addListener(changes => { if (changes.lang) setupMenu(); });
 

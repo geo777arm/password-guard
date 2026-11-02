@@ -2,6 +2,7 @@
 const STRINGS = {
   ru: {
     subtitle: "Защита паролей включена",
+    langAuto: "Авто",
     checked: "Проверено", leaked: "В утечках", reused: "Повторы",
     generator: "Генератор пароля", chars: "символов",
     words: n => (n < 5 ? "слова" : "слов"),
@@ -100,6 +101,7 @@ const STRINGS = {
   },
   en: {
     subtitle: "Password protection is on",
+    langAuto: "Auto",
     checked: "Checked", leaked: "Leaked", reused: "Reused",
     generator: "Password generator", chars: "characters",
     words: () => "words",
@@ -198,7 +200,19 @@ const STRINGS = {
   },
 };
 
-let LANG = navigator.language.startsWith("ru") ? "ru" : "en";
+// Язык устройства: берём первый подходящий из языков системы и браузера.
+// Русский ставим и тем, у кого белорусский, казахский или киргизский.
+function detectLang() {
+  const langs = (navigator.languages && navigator.languages.length) ? navigator.languages : [navigator.language || "en"];
+  for (const l of langs) {
+    const code = l.toLowerCase().split("-")[0];
+    if (["ru", "be", "kk", "ky"].includes(code)) return "ru";
+    if (code === "en") return "en";
+  }
+  return "en";
+}
+
+let LANG = detectLang();
 
 function t(key, ...args) {
   const value = STRINGS[LANG][key];
@@ -208,13 +222,16 @@ function t(key, ...args) {
 async function loadLang() {
   if (typeof chrome === "undefined" || !chrome.storage) return LANG;
   const { lang } = await chrome.storage.local.get("lang");
-  if (lang === "ru" || lang === "en") LANG = lang;
+  LANG = lang === "ru" || lang === "en" ? lang : detectLang(); // "auto" или пусто — по языку устройства
   return LANG;
 }
 
 // Если язык переключили в окошке, страницы сразу подхватят его.
 if (typeof chrome !== "undefined" && chrome.storage) {
   chrome.storage.onChanged.addListener(changes => {
-    if (changes.lang && changes.lang.newValue) LANG = changes.lang.newValue;
+    if (changes.lang) {
+      const lang = changes.lang.newValue;
+      LANG = lang === "ru" || lang === "en" ? lang : detectLang();
+    }
   });
 }

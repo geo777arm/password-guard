@@ -21,7 +21,7 @@ A browser extension that warns you, while you type, if your password has appeare
 - **Manual check.** Type any password into the popup to see if it has leaked and how strong it is. Nothing is saved.
 - **"Why is this safe?"** A short explanation right in the popup, with a link to this source code.
 - **Generator.** Two modes: a random password (8–32 characters), or an easy-to-remember passphrase of 3–6 random words like `Kayak-Cookie-Galaxy-Broom-37!` (Russian words are written in Latin letters so every site accepts them). Uses `crypto.getRandomValues`.
-- **English and Russian.** Switch the language with the RU / EN toggle in the popup; warnings on websites follow it instantly.
+- **English and Russian.** The language follows your device by default (Auto), or pick RU / EN in the popup; warnings on websites follow it instantly.
 
 ![Fake site, http page and foreign form warnings](docs/site-protection.png)
 

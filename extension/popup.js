@@ -87,7 +87,7 @@ function renderTexts() {
   for (const el of document.querySelectorAll("[data-i18n-label]")) el.setAttribute("aria-label", t(el.dataset.i18nLabel));
   document.getElementById("generated").placeholder = t("placeholder");
   document.getElementById("check-input").placeholder = t("checkPlaceholder");
-  for (const btn of document.querySelectorAll("[data-lang]")) btn.classList.toggle("active", btn.dataset.lang === LANG);
+  for (const btn of document.querySelectorAll("[data-lang]")) btn.classList.toggle("active", btn.dataset.lang === langSetting);
   renderLength();
   renderTwofa();
   renderTrace();
@@ -134,10 +134,13 @@ async function renderTrace() {
   document.getElementById("trace-count").textContent = t("twofaLeft", doneCount, FOOTPRINT.length);
 }
 
+// Выбор языка: «Авто» — по языку устройства (по умолчанию), RU или EN — вручную.
+let langSetting = "auto";
 for (const btn of document.querySelectorAll("[data-lang]")) {
   btn.addEventListener("click", async () => {
-    LANG = btn.dataset.lang;
-    await chrome.storage.local.set({ lang: LANG });
+    langSetting = btn.dataset.lang;
+    LANG = langSetting === "auto" ? detectLang() : langSetting;
+    await chrome.storage.local.set({ lang: langSetting });
     if (mode === "words") output.value = "";
     renderTexts();
     renderStats();
@@ -198,7 +201,7 @@ document.getElementById("copy").addEventListener("click", async () => {
 // Сбрасываем статистику и отпечатки, но оставляем выбранный язык.
 document.getElementById("reset").addEventListener("click", async () => {
   await chrome.storage.local.clear();
-  await chrome.storage.local.set({ lang: LANG });
+  await chrome.storage.local.set({ lang: langSetting });
   renderStats();
   renderTwofa();
   renderTrace();
@@ -274,5 +277,8 @@ showTab(["check", "generate", "twofa", "trace", "about"].includes(savedTab) ? sa
 let savedMode = "random";
 try { savedMode = localStorage.getItem("pg-mode") || "random"; } catch {}
 setMode(MODES[savedMode] ? savedMode : "random");
-loadLang().then(renderTexts);
+chrome.storage.local.get("lang").then(({ lang }) => {
+  langSetting = lang === "ru" || lang === "en" ? lang : "auto";
+  return loadLang();
+}).then(renderTexts);
 renderStats();
