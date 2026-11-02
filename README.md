@@ -41,7 +41,7 @@ A password extension *should* be met with suspicion, so here is how to check thi
 
 - **It uses the official Have I Been Pwned API**, the same [Pwned Passwords range API](https://haveibeenpwned.com/API/v3#PwnedPasswords) that password managers like 1Password use. Your password and its full hash never leave your device.
 - **It can only talk to one server.** Look at [`manifest.json`](extension/manifest.json): the only network permission is `https://api.pwnedpasswords.com/*`, plus `storage`. Chrome blocks every other request, so it physically can't send your passwords anywhere else.
-- **No remote code, no analytics, no account.** All code is in this repo, about 600 lines of plain JavaScript you can read in a few minutes.
+- **No remote code, no analytics, no account.** All code is in this repo, under 900 lines of plain JavaScript (most of it is a word list).
 - **Verify the traffic.** Open `chrome://extensions` → Password Guard → *Inspect views: service worker* → *Network*, type a password on any site, and you will see a single request like `range/5BAA6` with 5 characters of a hash.
 - **Never install extensions from links in messages.** Get it from this GitHub page only.
 
